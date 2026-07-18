@@ -1,0 +1,1182 @@
+<style>
+/* ============================================================
+   THE HUMAN COST OF HYPERINFLATION — presentation deck
+   Design: "Central bank at midnight" — dark monetary-crisis
+   gravitas, ember accent, editorial serif + monospace data.
+   ============================================================ */
+
+:root{
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+
+  /* LIGHT THEME (default) */
+  --ground:   #E3DDD1;
+  --stage:    #F6F3EC;
+  --panel:    #FFFFFF;
+  --panel-2:  #F0ECE2;
+  --ink:      #1A1D21;
+  --ink-dim:  #55524B;
+  --muted:    #8A857B;
+  --hairline: rgba(20,18,14,0.13);
+  --hairline-2: rgba(20,18,14,0.07);
+
+  --ember:    #B4400F;   /* accent as text */
+  --ember-bright: #C64818;
+  --ember-glow: rgba(198,72,24,0.16);
+  --celeste:  #24698F;
+  --gold:     #916012;
+  --green:    #2E7D4F;
+
+  /* chart marks (validated, light surface) */
+  --c-ember: #C64818;
+  --c-celeste: #2F7DA8;
+  --c-amber: #9A6410;
+  --c-green: #2E8B57;
+  --track: rgba(20,18,14,0.09);
+  --grid: rgba(20,18,14,0.10);
+
+  --stage-shadow: 0 2px 40px rgba(40,30,20,0.10), 0 0 0 1px rgba(20,18,14,0.05);
+}
+
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    --ground:   #090C0F;
+    --stage:    #12181D;
+    --panel:    #182027;
+    --panel-2:  #1E272F;
+    --ink:      #ECE6DB;
+    --ink-dim:  #A7AEB2;
+    --muted:    #6E787E;
+    --hairline: rgba(236,230,219,0.12);
+    --hairline-2: rgba(236,230,219,0.06);
+
+    --ember:    #F0763A;
+    --ember-bright: #F0763A;
+    --ember-glow: rgba(224,85,31,0.22);
+    --celeste:  #7FB8D6;
+    --gold:     #E0A93B;
+    --green:    #64BE8A;
+
+    --c-ember: #DA5622;
+    --c-celeste: #4795C0;
+    --c-amber: #BE7F1C;
+    --c-green: #46A06A;
+    --track: rgba(236,230,219,0.09);
+    --grid: rgba(236,230,219,0.09);
+
+    --stage-shadow: 0 2px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(236,230,219,0.05);
+  }
+}
+
+:root[data-theme="dark"]{
+  --ground:   #090C0F;
+  --stage:    #12181D;
+  --panel:    #182027;
+  --panel-2:  #1E272F;
+  --ink:      #ECE6DB;
+  --ink-dim:  #A7AEB2;
+  --muted:    #6E787E;
+  --hairline: rgba(236,230,219,0.12);
+  --hairline-2: rgba(236,230,219,0.06);
+
+  --ember:    #F0763A;
+  --ember-bright: #F0763A;
+  --ember-glow: rgba(224,85,31,0.22);
+  --celeste:  #7FB8D6;
+  --gold:     #E0A93B;
+  --green:    #64BE8A;
+
+  --c-ember: #DA5622;
+  --c-celeste: #4795C0;
+  --c-amber: #BE7F1C;
+  --c-green: #46A06A;
+  --track: rgba(236,230,219,0.09);
+  --grid: rgba(236,230,219,0.09);
+
+  --stage-shadow: 0 2px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(236,230,219,0.05);
+}
+
+*{ box-sizing:border-box; }
+
+html,body{ height:100%; }
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow:hidden;
+}
+
+/* ---------- ambient background ---------- */
+.ambient{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.ambient::before{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(120% 90% at 82% 8%, var(--ember-glow), transparent 55%),
+    radial-gradient(120% 100% at 10% 100%, rgba(36,105,143,0.10), transparent 60%);
+}
+.ambient::after{
+  content:""; position:absolute; inset:-2px;
+  background-image:
+    linear-gradient(var(--hairline-2) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hairline-2) 1px, transparent 1px);
+  background-size: 46px 46px;
+  opacity:.6;
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 40%, #000 40%, transparent 92%);
+          mask-image: radial-gradient(120% 100% at 50% 40%, #000 40%, transparent 92%);
+  animation: drift 46s linear infinite;
+}
+@keyframes drift{ to{ background-position: 46px 46px, 46px 46px; } }
+
+/* ---------- chrome ---------- */
+.chrome-top,.chrome-bottom{
+  position:fixed; left:0; right:0; z-index:30;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 16px clamp(18px,3.2vw,44px);
+  font-family:var(--mono);
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted);
+  pointer-events:none;
+}
+.chrome-top{ top:0; }
+.chrome-bottom{ bottom:0; flex-direction:column; align-items:stretch; gap:8px; padding-bottom:14px; }
+.brand{ display:flex; align-items:center; gap:10px; color:var(--ink-dim); }
+.brand .glyph{
+  font-family:var(--serif); font-size:15px; letter-spacing:0; text-transform:none;
+  color:var(--ember); font-weight:700;
+}
+.top-right{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:flex-end; pointer-events:auto; }
+.venue{ text-align:right; color:var(--muted); line-height:1.5; }
+.venue b{ color:var(--ink-dim); font-weight:600; }
+.top-tools{ display:flex; gap:8px; }
+
+.rail{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.rail .act{ color:var(--ink-dim); display:flex; gap:10px; align-items:center; }
+.rail .act .n{ color:var(--ember); }
+.rail .count{ color:var(--muted); }
+.rail .count b{ color:var(--ink-dim); font-weight:600; }
+.progress{ height:2px; background:var(--hairline); border-radius:2px; overflow:hidden; }
+.progress > i{ display:block; height:100%; width:0; background:linear-gradient(90deg,var(--celeste),var(--ember)); transition:width .6s var(--ease); }
+
+/* ---------- controls ---------- */
+.controls{ position:fixed; z-index:31; right:clamp(18px,3.2vw,44px); bottom:52px; display:flex; gap:8px; }
+.controls button, .ui-btn{
+  all:unset; cursor:pointer; width:38px; height:38px; display:grid; place-items:center;
+  border-radius:50%; color:var(--ink-dim);
+  border:1px solid var(--hairline); background:color-mix(in srgb, var(--stage) 70%, transparent);
+  backdrop-filter: blur(6px); transition: color .2s, border-color .2s, transform .2s, background .2s;
+}
+.controls button:hover, .ui-btn:hover{ color:var(--ember); border-color:var(--ember); transform:translateY(-1px); }
+.controls button:focus-visible, .ui-btn:focus-visible{ outline:2px solid var(--celeste); outline-offset:2px; }
+.controls svg{ width:16px; height:16px; }
+@media (max-width:640px){ .venue{ font-size:9px; } .top-right{ gap:10px; } }
+
+/* ---------- deck & slides ---------- */
+.deck{ position:fixed; inset:0; z-index:10; }
+.slide{
+  position:absolute; inset:0;
+  display:grid; place-items:center;
+  padding: clamp(58px,8vh,96px) clamp(20px,5vw,80px);
+  opacity:0; visibility:hidden;
+  transform: translateX(0) scale(.985);
+  transition: opacity .5s var(--ease), transform .62s var(--ease), visibility 0s linear .62s;
+  pointer-events:none;
+}
+.slide.is-before{ transform: translateX(-5%) scale(.975); opacity:0; }
+.slide.is-after{ transform: translateX(5%) scale(.975); opacity:0; }
+.slide.is-active{
+  opacity:1; visibility:visible; transform:none; pointer-events:auto; z-index:12;
+  transition: opacity .55s var(--ease), transform .7s var(--ease), visibility 0s;
+}
+
+.stage{
+  width:min(1180px, 100%);
+  max-height:100%;
+  overflow:auto; scrollbar-width:none;
+}
+.stage::-webkit-scrollbar{ display:none; }
+
+/* ---------- typography ---------- */
+.eyebrow{
+  font-family:var(--mono); font-size:clamp(10px,1.05vw,12.5px);
+  letter-spacing:.22em; text-transform:uppercase; color:var(--ember);
+  display:flex; align-items:center; gap:12px; margin:0 0 22px;
+}
+.eyebrow::before{ content:""; width:26px; height:1px; background:var(--ember); opacity:.7; }
+.eyebrow.q{ color:var(--celeste); }
+.eyebrow.q::before{ background:var(--celeste); }
+
+h1.title{
+  font-family:var(--serif); font-weight:700; margin:0;
+  font-size:clamp(38px,6.6vw,80px); line-height:1.02; letter-spacing:-.015em;
+  text-wrap:balance;
+}
+h2.headline{
+  font-family:var(--serif); font-weight:700; margin:0 0 18px;
+  font-size:clamp(28px,4.4vw,52px); line-height:1.06; letter-spacing:-.01em; text-wrap:balance;
+}
+.q-big{
+  font-family:var(--serif); font-weight:500; margin:0;
+  font-size:clamp(26px,4.3vw,54px); line-height:1.16; letter-spacing:-.01em; text-wrap:balance;
+}
+.lead{ font-size:clamp(15px,1.7vw,20px); line-height:1.6; color:var(--ink-dim); max-width:64ch; margin:0; }
+.sub{ font-size:clamp(13px,1.35vw,16px); line-height:1.6; color:var(--muted); }
+em.hl{ font-style:normal; color:var(--ember); }
+em.hlc{ font-style:normal; color:var(--celeste); }
+strong.k{ color:var(--ink); font-weight:700; }
+.mono{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+/* reveal engine */
+[data-reveal]{ opacity:0; transform:translateY(16px); transition:opacity .6s var(--ease), transform .6s var(--ease); transition-delay: calc(var(--ri,0)*70ms + 90ms); }
+.slide.is-active.revealed [data-reveal]{ opacity:1; transform:none; }
+
+/* ---------- layout helpers ---------- */
+.rows{ display:flex; flex-direction:column; }
+.gap-s{ gap:10px;} .gap-m{ gap:18px;} .gap-l{ gap:30px;}
+.grid{ display:grid; gap:clamp(14px,1.8vw,24px); }
+.c2{ grid-template-columns:repeat(2,1fr);} .c3{ grid-template-columns:repeat(3,1fr);} .c4{ grid-template-columns:repeat(4,1fr);}
+.split{ display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(26px,4vw,64px); align-items:center; }
+.split.wide{ grid-template-columns:1fr 1.15fr; }
+@media (max-width:860px){ .split,.split.wide,.c2,.c3,.c4{ grid-template-columns:1fr; } }
+
+/* ---------- cards / tags ---------- */
+.card{ background:var(--panel); border:1px solid var(--hairline); border-radius:14px; padding:clamp(16px,2vw,26px); }
+.card.flat{ background:var(--panel-2); }
+.tag{
+  display:inline-flex; align-self:flex-start; align-items:center; gap:7px; font-family:var(--mono);
+  font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-dim);
+  border:1px solid var(--hairline); border-radius:100px; padding:6px 12px;
+}
+.tag .dot{ width:7px; height:7px; border-radius:50%; background:var(--ember); }
+.dot.celeste{ background:var(--c-celeste);} .dot.green{ background:var(--c-green);} .dot.amber{ background:var(--c-amber);}
+
+/* ---------- stat tiles ---------- */
+.stat{ display:flex; flex-direction:column; gap:6px; }
+.stat .n{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-weight:600; color:var(--ink);
+  font-size:clamp(30px,4.6vw,58px); line-height:1; letter-spacing:-.02em; }
+.stat .n.ember{ color:var(--ember); }
+.stat .n.celeste{ color:var(--celeste); }
+.stat .l{ font-size:clamp(12.5px,1.3vw,15px); line-height:1.4; color:var(--ink-dim); }
+.stat .sublabel{ font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--muted); }
+
+.figure-xl{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-weight:600;
+  font-size:clamp(52px,12vw,150px); line-height:.9; letter-spacing:-.03em; color:var(--ember); }
+
+/* ---------- horizontal bars ---------- */
+.bars{ display:flex; flex-direction:column; gap:clamp(12px,1.7vw,20px); }
+.hbar{ display:flex; flex-direction:column; gap:8px; }
+.hbar-head{ display:flex; align-items:baseline; justify-content:space-between; gap:14px; }
+.hbar-label{ font-size:clamp(13px,1.4vw,16.5px); color:var(--ink-dim); line-height:1.3; }
+.hbar-val{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-weight:600;
+  font-size:clamp(16px,2vw,24px); color:var(--ink); white-space:nowrap; }
+.hbar-track{ height:10px; border-radius:6px; background:var(--track); overflow:hidden; }
+.hbar-fill{ height:100%; width:0; border-radius:6px; transition: width .95s var(--ease); transition-delay: calc(var(--ri,0)*70ms + 240ms); }
+.slide.is-active.revealed .hbar-fill{ width: var(--w); }
+.c-ember{ background:var(--c-ember);} .c-celeste{ background:var(--c-celeste);} .c-amber{ background:var(--c-amber);} .c-green{ background:var(--c-green);}
+.hbar-note{ font-size:12px; color:var(--muted); font-family:var(--mono); letter-spacing:.03em; }
+
+/* legend */
+.legend{ display:flex; flex-wrap:wrap; gap:14px 22px; font-family:var(--mono); font-size:11.5px;
+  letter-spacing:.05em; text-transform:uppercase; color:var(--muted); }
+.legend span{ display:inline-flex; align-items:center; gap:8px; }
+.legend i{ width:12px; height:12px; border-radius:3px; display:inline-block; }
+
+/* ---------- quote ---------- */
+.quote{ position:relative; padding-left:clamp(18px,2vw,26px); }
+.quote::before{ content:""; position:absolute; left:0; top:4px; bottom:4px; width:3px; border-radius:3px;
+  background:linear-gradient(var(--ember),var(--celeste)); }
+.quote p{ font-family:var(--serif); font-style:italic; font-size:clamp(17px,2.3vw,28px);
+  line-height:1.35; color:var(--ink); margin:0 0 12px; text-wrap:balance; }
+.quote cite{ font-style:normal; font-family:var(--mono); font-size:12px; letter-spacing:.06em;
+  color:var(--muted); text-transform:uppercase; }
+.quote.sm p{ font-size:clamp(15px,1.9vw,21px); line-height:1.32; margin-bottom:8px; }
+
+.cite-ref{ font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:.03em; }
+.divider{ height:1px; background:var(--hairline); margin:0; border:0; }
+
+/* pill list */
+.plist{ display:flex; flex-direction:column; gap:12px; }
+.pitem{ display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:start; }
+.pitem .mk{ font-family:var(--mono); font-size:12px; color:var(--ember); padding-top:3px; letter-spacing:.05em; }
+.pitem .mk.c{ color:var(--celeste);} .pitem .mk.g{ color:var(--green);}
+.pitem .tx{ font-size:clamp(13.5px,1.45vw,16.5px); line-height:1.5; color:var(--ink-dim); }
+.pitem .tx b{ color:var(--ink); font-weight:600; }
+
+/* ---------- cycle diagram ---------- */
+.cycle{ position:relative; --sz:min(540px,86vw,54vh); width:var(--sz); height:var(--sz); margin:0 auto; }
+.cycle svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+.cycle .arc{ fill:none; stroke:var(--hairline); stroke-width:2; }
+.cycle .flow{ fill:none; stroke:var(--ember); stroke-width:2.4; stroke-linecap:round;
+  stroke-dasharray:9 15; animation:flow 1.5s linear infinite; opacity:.85; }
+@keyframes flow{ to{ stroke-dashoffset:-24; } }
+.cnode{
+  position:absolute; transform:translate(-50%,-50%);
+  width:clamp(120px,25%,168px); text-align:center;
+  background:var(--panel); border:1px solid var(--hairline); border-radius:14px;
+  padding:14px 12px; box-shadow:var(--stage-shadow);
+}
+.cnode .ct{ font-family:var(--serif); font-weight:700; font-size:clamp(13px,1.5vw,17px); line-height:1.15; color:var(--ink); }
+.cnode .cn{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-weight:600;
+  font-size:clamp(20px,2.6vw,30px); color:var(--ember); margin-top:6px; line-height:1; }
+.cnode .cl{ font-size:11px; color:var(--muted); line-height:1.3; margin-top:5px; }
+.cnode .cref{ font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:.04em; margin-top:6px; }
+.cnode.n-top{ left:50%; top:11%; }
+.cnode.n-right{ left:87%; top:50%; }
+.cnode.n-bottom{ left:50%; top:89%; }
+.cnode.n-left{ left:13%; top:50%; }
+.ccenter{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; width:34%; }
+.ccenter .cc-t{ font-family:var(--serif); font-weight:700; font-style:italic; font-size:clamp(13px,1.5vw,17px); color:var(--ink-dim); line-height:1.2; }
+.ccenter .cc-n{ font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:4px; letter-spacing:.05em; }
+@media (max-width:720px){
+  .cycle{ --sz:min(340px,88vw); }
+  .cnode{ width:44%; padding:10px 8px; }
+  .cnode.n-right{ left:78%; } .cnode.n-left{ left:22%; }
+}
+
+/* compare matrix (previous attempts) */
+.matrix{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.8vw,22px); }
+@media (max-width:860px){ .matrix{ grid-template-columns:1fr; } }
+.mcard{ background:var(--panel); border:1px solid var(--hairline); border-radius:14px; padding:clamp(16px,1.9vw,24px);
+  display:flex; flex-direction:column; gap:12px; border-top:3px solid var(--c-ember); }
+.mcard:nth-child(2){ border-top-color:var(--c-amber); }
+.mcard:nth-child(3){ border-top-color:var(--c-celeste); }
+.mcard h4{ font-family:var(--serif); font-size:clamp(18px,2.1vw,24px); margin:0; }
+.mcard .mtag{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.mcard .mbody{ font-size:14px; line-height:1.5; color:var(--ink-dim); }
+.mcard .mout{ margin-top:auto; padding-top:12px; border-top:1px solid var(--hairline); font-family:var(--mono);
+  font-size:12px; letter-spacing:.03em; color:var(--ember); display:flex; align-items:center; gap:8px; }
+.mcard .mout::before{ content:"→"; }
+
+/* title slide extras */
+.title-meta{ display:flex; flex-wrap:wrap; gap:10px 28px; align-items:center; font-family:var(--mono);
+  font-size:12.5px; letter-spacing:.05em; color:var(--ink-dim); }
+.title-meta .sep{ color:var(--muted); }
+.hint{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+  display:inline-flex; align-items:center; gap:9px; }
+.hint .key{ border:1px solid var(--hairline); border-radius:5px; padding:2px 8px; color:var(--ink-dim); }
+.hint .key svg{ width:11px; height:11px; vertical-align:-1px; }
+
+/* econochori pillars */
+.pillar{ display:flex; flex-direction:column; gap:9px; padding:clamp(15px,1.8vw,22px);
+  background:var(--panel); border:1px solid var(--hairline); border-radius:14px; height:100%; }
+.pillar .ph{ font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ember); display:flex; gap:8px; align-items:center; }
+.pillar .ph.c{ color:var(--celeste);} .pillar .ph.g{ color:var(--green);} .pillar .ph.a{ color:var(--gold);}
+.pillar h4{ font-family:var(--serif); font-size:clamp(16px,1.9vw,21px); margin:2px 0 0; line-height:1.15; }
+.pillar p{ margin:0; font-size:13.5px; line-height:1.5; color:var(--ink-dim); }
+
+.dipace{ display:grid; grid-template-columns:auto 1fr; gap:16px; align-items:center;
+  background:var(--panel-2); border:1px solid var(--hairline); border-radius:14px; padding:16px 18px; }
+.dipace .av{ width:52px; height:52px; border-radius:50%; display:grid; place-items:center; font-family:var(--serif);
+  font-weight:700; font-size:20px; color:var(--stage); background:linear-gradient(150deg,var(--celeste),var(--ember)); }
+.dipace .dn{ font-family:var(--serif); font-weight:700; font-size:17px; }
+.dipace .dr{ font-size:12.5px; color:var(--muted); line-height:1.45; }
+
+/* two-policy */
+.policy{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(16px,2vw,28px); }
+@media (max-width:860px){ .policy{ grid-template-columns:1fr; } }
+.pol{ background:var(--panel); border:1px solid var(--hairline); border-radius:16px; padding:clamp(18px,2.2vw,28px);
+  display:flex; flex-direction:column; gap:14px; position:relative; overflow:hidden; }
+.pol::before{ content:""; position:absolute; inset:0 auto 0 0; width:3px; background:var(--c-ember); }
+.pol.b::before{ background:var(--c-celeste); }
+.pol .pnum{ font-family:var(--mono); font-size:12px; letter-spacing:.1em; color:var(--muted); }
+.pol h3{ font-family:var(--serif); font-size:clamp(19px,2.3vw,26px); margin:0; line-height:1.1; }
+.pol .pd{ font-size:14px; line-height:1.55; color:var(--ink-dim); margin:0; }
+.pol .pk{ font-family:var(--mono); font-size:12px; color:var(--ink-dim); border-top:1px solid var(--hairline);
+  padding-top:12px; margin-top:auto; }
+.pol .pk b{ color:var(--ember); }
+.pol.b .pk b{ color:var(--celeste); }
+
+/* overview */
+.overview{ position:fixed; inset:0; z-index:60; background:color-mix(in srgb,var(--ground) 92%, #000);
+  backdrop-filter:blur(4px); display:none; padding:clamp(40px,7vh,80px) clamp(20px,5vw,70px); overflow:auto; }
+.overview.open{ display:block; }
+.overview h3{ font-family:var(--mono); font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin:0 0 22px; }
+.ov-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+.ov-item{ text-align:left; cursor:pointer; background:var(--panel); border:1px solid var(--hairline); border-radius:11px;
+  padding:14px; display:flex; flex-direction:column; gap:6px; transition:border-color .2s, transform .2s; }
+.ov-item:hover{ border-color:var(--ember); transform:translateY(-2px); }
+.ov-item.here{ border-color:var(--celeste); box-shadow:0 0 0 1px var(--celeste); }
+.ov-item .oi-n{ font-family:var(--mono); font-size:11px; color:var(--ember); letter-spacing:.05em; }
+.ov-item .oi-t{ font-family:var(--serif); font-size:15px; line-height:1.2; color:var(--ink); }
+.ov-item .oi-a{ font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+
+/* misc */
+.kicker{ font-family:var(--serif); font-style:italic; font-size:clamp(15px,1.7vw,20px); color:var(--celeste); }
+.small-note{ font-family:var(--mono); font-size:11px; letter-spacing:.03em; color:var(--muted); line-height:1.5; }
+.ref-inline{ color:var(--ember); font-family:var(--mono); font-size:.82em; vertical-align:2px; }
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .ambient::after{ animation:none; }
+  .cycle .flow{ animation:none; }
+  .slide, [data-reveal], .hbar-fill, .progress > i{ transition-duration:.001s !important; transition-delay:0s !important; }
+}
+
+@media (max-width:720px){
+  .chrome-top{ padding:12px 18px; }
+  .chrome-top .brand span.long{ display:none; }
+  .venue{ display:none; }
+  .ui-btn{ width:34px; height:34px; }
+  .slide{ padding-top:62px; padding-bottom:76px; }
+  .dipace{ grid-template-columns:1fr; }
+  .dipace .av{ width:46px; height:46px; }
+}
+</style>
+
+<div class="ambient" aria-hidden="true"></div>
+
+<header class="chrome-top">
+  <div class="brand"><span class="glyph">H⁺</span><span class="long">The Human Cost of Hyperinflation</span></div>
+  <div class="top-right">
+    <div class="venue"><b>University of Chicago × UCEMA</b><br>Joint Initiative · Latin American Experimental Economics</div>
+    <div class="top-tools">
+      <button class="ui-btn" id="btn-overview" title="Slide index (O)" aria-label="Slide index">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </button>
+      <button class="ui-btn" id="btn-theme" title="Toggle theme" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a9 9 0 1 0 9 9c-4.97 0-9-4.03-9-9Z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="deck" id="deck" tabindex="0" aria-label="Presentation slides">
+
+  <!-- ============ SLIDE 1 — TITLE ============ -->
+  <section class="slide" data-act="Opening" data-title="Title">
+    <div class="stage">
+      <div class="rows gap-l">
+        <div class="eyebrow" data-reveal>University of Chicago × UCEMA · Experimental Economics</div>
+        <h1 class="title" data-reveal>The Human Cost<br>of Hyperinflation</h1>
+        <p class="lead" data-reveal>A self-reinforcing cycle of <em class="hl">psychological</em> and <em class="hl">physiological</em> deterioration — and the policy interventions that can interrupt it.</p>
+        <hr class="divider" data-reveal>
+        <div class="title-meta" data-reveal>
+          <span>Massimo Tomás Pastore</span>
+          <span class="sep">/</span>
+          <span>EconoChori Survey · Argentina</span>
+          <span class="sep">/</span>
+          <span>April–May 2026 · n = 47</span>
+        </div>
+        <div data-reveal style="margin-top:6px">
+          <span class="hint">Press <span class="key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span> to begin</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 2 — RESEARCH QUESTION ============ -->
+  <section class="slide" data-act="Act I · The Question" data-title="Research question">
+    <div class="stage">
+      <div class="rows gap-l">
+        <div class="eyebrow q" data-reveal>The research question</div>
+        <p class="q-big" data-reveal>How does hyperinflation generate a <em class="hl">self-reinforcing cycle</em> of psychological and physiological deterioration —</p>
+        <p class="q-big" data-reveal style="color:var(--ink-dim)">and what <em class="hlc">policy interventions</em> can interrupt this cycle to restore economic stability?</p>
+        <hr class="divider" data-reveal>
+        <p class="lead" data-reveal>Hyperinflation is treated here not as a price statistic but as a shock to human capital — one whose consequences extend beyond finance into nutrition, mental health, and long-term hope.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 3 — WHAT IS INFLATION ============ -->
+  <section class="slide" data-act="Act I · The Question" data-title="What is hyperinflation">
+    <div class="stage">
+      <div class="split">
+        <div class="rows gap-m">
+          <div class="eyebrow" data-reveal>The mechanism</div>
+          <h2 class="headline" data-reveal>Inflation is monetary.<br>Hyperinflation is a<br>collapse of <em class="hl">trust</em>.</h2>
+          <p class="lead" data-reveal>When money grows faster than real output, aggregate demand outruns productive capacity and prices rise. Hyperinflation begins when <strong class="k">public confidence in the currency breaks</strong>: people spend or convert money as fast as they can, and that flight itself accelerates prices.</p>
+        </div>
+        <div class="rows gap-s" data-reveal>
+          <div class="card flat rows gap-m">
+            <div class="tag"><span class="dot"></span>The monetary spiral</div>
+            <div class="plist">
+              <div class="pitem"><span class="mk">01</span><span class="tx"><b>Excess money creation</b> — deficits financed by printing.</span></div>
+              <div class="pitem"><span class="mk">02</span><span class="tx"><b>Money supply &gt; real output</b> — demand outruns capacity.</span></div>
+              <div class="pitem"><span class="mk">03</span><span class="tx"><b>Confidence erodes</b> — the peso is spent or dumped for dollars.</span></div>
+              <div class="pitem"><span class="mk">04</span><span class="tx"><b>Prices accelerate</b> — the flight from money feeds itself.</span></div>
+            </div>
+            <hr class="divider">
+            <p class="sub">“Inflation generates stress, which may lead to high rates of anxiety and depression.” <span class="ref-inline">[1]</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 4 — THE THESIS / CYCLE ============ -->
+  <section class="slide" data-act="Act II · The Mechanism" data-title="The self-reinforcing cycle">
+    <div class="stage">
+      <div class="rows gap-m" style="text-align:center; align-items:center">
+        <div class="eyebrow" data-reveal style="justify-content:center">Act II · The thesis</div>
+        <h2 class="headline" data-reveal style="margin-bottom:4px">Four mechanisms — one circuit</h2>
+        <p class="lead" data-reveal style="text-align:center; margin:0 auto 6px">Hyperinflation is not a set of independent symptoms. It is a loop in which each harm feeds the next.</p>
+        <div class="cycle" data-reveal>
+          <svg viewBox="0 0 560 560" aria-hidden="true">
+            <defs>
+              <marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="var(--ember)"></path>
+              </marker>
+            </defs>
+            <path class="arc" d="M355 95 Q470 120 465 235"/>
+            <path class="arc" d="M465 325 Q470 440 355 465"/>
+            <path class="arc" d="M205 465 Q90 440 95 325"/>
+            <path class="arc" d="M95 235 Q90 120 205 95"/>
+            <path class="flow" d="M355 95 Q470 120 465 235" marker-end="url(#ah)"/>
+            <path class="flow" d="M465 325 Q470 440 355 465" marker-end="url(#ah)"/>
+            <path class="flow" d="M205 465 Q90 440 95 325" marker-end="url(#ah)"/>
+            <path class="flow" d="M95 235 Q90 120 205 95" marker-end="url(#ah)"/>
+          </svg>
+          <div class="cnode n-top"><div class="ct">Consumption substitution</div><div class="cl">Nutrition &amp; culture lost</div></div>
+          <div class="cnode n-right"><div class="ct">Psychological strain</div><div class="cl">Fear, uncertainty, distress</div></div>
+          <div class="cnode n-bottom"><div class="ct">Defensive decisions</div><div class="cl">Survival over investment</div></div>
+          <div class="cnode n-left"><div class="ct">Eroded productive capacity</div><div class="cl">Income &amp; human capital fall</div></div>
+          <div class="ccenter"><div class="cc-t">Self-reinforcing cycle</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 5 — METHODOLOGY ============ -->
+  <section class="slide" data-act="Act III · Method & EconoChori" data-title="Methodology">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>Act III · Methodology</div>
+        <h2 class="headline" data-reveal>A convergent mixed-methods design</h2>
+        <div class="grid c2">
+          <div class="card rows gap-m" data-reveal>
+            <div class="tag"><span class="dot celeste"></span>Secondary evidence — the mechanism</div>
+            <div class="plist">
+              <div class="pitem"><span class="mk c">·</span><span class="tx"><b>Peer-reviewed empirical work</b> on inflation, food insecurity &amp; mental health <span class="ref-inline">[1,11,15,17]</span></span></div>
+              <div class="pitem"><span class="mk c">·</span><span class="tx"><b>Institutional reports</b> — IMF, World Bank, WHO, INDEC</span></div>
+              <div class="pitem"><span class="mk c">·</span><span class="tx"><b>Three case studies</b> across structural variation: Venezuela, Zimbabwe, Argentina</span></div>
+            </div>
+          </div>
+          <div class="card rows gap-m" data-reveal>
+            <div class="tag"><span class="dot"></span>Primary survey — the magnitude</div>
+            <div class="plist">
+              <div class="pitem"><span class="mk">·</span><span class="tx"><b>EconoChori household survey</b>, Argentina, Apr–May 2026</span></div>
+              <div class="pitem"><span class="mk">·</span><span class="tx"><b>47 respondents · 21 items · 5 domains</b> — income, consumption, financial stress, digital access, outlook</span></div>
+              <div class="pitem"><span class="mk">·</span><span class="tx">Administered in Argentine Spanish; closing item uses the <em class="hl">asado</em> metaphor to reduce technical-vocabulary bias</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card flat" data-reveal>
+          <p class="lead" style="margin:0"><strong class="k">Triangulation, not testing.</strong> The survey does not attempt statistical inference — it provides household-level corroboration of mechanisms already established in the peer-reviewed literature, inside the specific national context the paper treats as a case study.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 6 — ECONOCHORI ============ -->
+  <section class="slide" data-act="Act III · Method & EconoChori" data-title="EconoChori">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>The project behind the data</div>
+        <div class="split wide" style="align-items:start">
+          <div class="rows gap-m">
+            <h2 class="headline" data-reveal style="margin-bottom:2px">EconoChori</h2>
+            <p class="lead" data-reveal>A community-based economic-outreach project working in low- and middle-income neighborhoods of Argentina — bringing economic literacy <em class="hl">into</em> the communities that macro statistics describe but rarely reach.</p>
+            <div class="dipace" data-reveal>
+              <div class="av">DP</div>
+              <div>
+                <div class="dn">Alongside Damián Di Pace</div>
+                <div class="dr">Argentine economist &amp; analyst · Director of Focus Market · regular voice in national economic media (Infobae, La Nación, El Cronista, iProfesional).</div>
+              </div>
+            </div>
+            <p class="small-note" data-reveal>The project's fieldwork and findings have carried into press coverage and public economic commentary — turning grassroots data collection into part of the national conversation on inflation.</p>
+          </div>
+          <div class="grid c2" data-reveal style="gap:14px">
+            <div class="pillar"><div class="ph">What it is</div><h4>Grassroots outreach</h4><p>Economic education &amp; support delivered directly in vulnerable neighborhoods.</p></div>
+            <div class="pillar"><div class="ph c">How we collect</div><h4>Household surveys</h4><p>Door-to-door instruments in Argentine Spanish through a trusted community network.</p></div>
+            <div class="pillar"><div class="ph a">In the press</div><h4>Public reach</h4><p>Findings featured in news articles &amp; economic commentary with Di Pace.</p></div>
+            <div class="pillar"><div class="ph g">Why it matters</div><h4>From macro to household</h4><p>Converts INDEC-level statistics into the lived evidence this paper is built on.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 7 — SAMPLE / TABLE 1 ============ -->
+  <section class="slide" data-act="Act III · Method & EconoChori" data-title="The sample (Table 1)">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>Table 1 · Who answered</div>
+        <div class="split" style="align-items:start">
+          <div class="rows gap-m">
+            <h2 class="headline" data-reveal>A micro-case study of the most-exposed cohort</h2>
+            <div class="grid c2" data-reveal>
+              <div class="stat"><span class="n celeste" data-count="98" data-suffix="%">98%</span><span class="l">female respondents (46 / 47)</span></div>
+              <div class="stat"><span class="n" data-count="36.2" data-decimals="1">36.2</span><span class="l">mean age · range 20–60</span></div>
+            </div>
+            <div class="card flat" data-reveal>
+              <p class="lead" style="margin:0"><strong class="k mono" style="font-size:1.1em">73%</strong> are in informal work, unemployment, or homemaking — the demographic the food-insecurity literature identifies as <em class="hl">worst hit</em> by inflationary crises. <span class="cite-ref">Purposive, not representative.</span></p>
+            </div>
+          </div>
+          <div class="rows gap-m" data-reveal>
+            <div class="bars">
+              <div class="tag" style="margin-bottom:2px"><span class="dot"></span>Labor-market status</div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Unemployed</span><span class="hbar-val" data-count="42.6" data-decimals="1" data-suffix="%">42.6%</span></div><div class="hbar-track"><div class="hbar-fill c-ember" style="--w:42.6%"></div></div></div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Informal day labor (changas)</span><span class="hbar-val" data-count="29.8" data-decimals="1" data-suffix="%">29.8%</span></div><div class="hbar-track"><div class="hbar-fill c-ember" style="--w:29.8%"></div></div></div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Informal salaried</span><span class="hbar-val" data-count="8.5" data-decimals="1" data-suffix="%">8.5%</span></div><div class="hbar-track"><div class="hbar-fill c-amber" style="--w:8.5%"></div></div></div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Homemaker · formal · self-employed</span><span class="hbar-val" data-count="12.8" data-decimals="1" data-suffix="%">12.8%</span></div><div class="hbar-track"><div class="hbar-fill c-celeste" style="--w:12.8%"></div></div></div>
+            </div>
+            <p class="small-note" data-reveal>Digital access is near-universal — <b class="mono" style="color:var(--ink-dim)">89%</b> own a phone and use digital wallets — yet <b class="mono" style="color:var(--ember)">62%</b> have never used or don't know AI.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 8 — VENEZUELA ============ -->
+  <section class="slide" data-act="Act IV · Three Collapses" data-title="Venezuela">
+    <div class="stage">
+      <div class="split">
+        <div class="rows gap-m">
+          <div class="eyebrow" data-reveal>Case study · Venezuela</div>
+          <div data-reveal>
+            <div class="figure-xl"><span data-count="344509.5" data-decimals="1" data-suffix="%">344,509.5%</span></div>
+            <p class="sub" style="margin-top:8px">annual inflation · February 2019 <span class="ref-inline">[2]</span></p>
+          </div>
+          <p class="lead" data-reveal>Well before the peak, researchers found “a predominance of negative emotions — <em class="hl">sadness, fear and anger</em>.” <span class="ref-inline">[3]</span> The psychological damage arrived long before the monetary collapse did.</p>
+          <div class="legend" data-reveal>
+            <span><i style="background:var(--c-ember)"></i>Consumption substitution</span>
+            <span><i style="background:var(--c-celeste)"></i>Cultural identity loss</span>
+          </div>
+        </div>
+        <div class="rows gap-m" data-reveal>
+          <div class="quote sm">
+            <p>“Some days we don't have food. We buy beef organ meats — they're cheaper. I was upper middle class!”</p>
+            <cite>— Venezuelan informant <span class="ref-inline">[4]</span></cite>
+          </div>
+          <div class="card flat">
+            <p class="lead" style="margin:0">Distress comes not from hunger alone, but from the loss of <strong class="k">culturally meaningful meals</strong> — arepas, tequeños — and the shame of not feeding one's family. <span class="ref-inline">[17]</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 9 — ZIMBABWE ============ -->
+  <section class="slide" data-act="Act IV · Three Collapses" data-title="Zimbabwe">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>Case study · Zimbabwe, 2008</div>
+        <h2 class="headline" data-reveal>When the body, not just the market, fails</h2>
+        <div class="grid c3" data-reveal>
+          <div class="stat"><span class="n ember">−<span data-count="14" data-suffix="%">14%</span></span><span class="l">real GDP, 2008 <span class="ref-inline">[5]</span></span></div>
+          <div class="stat"><span class="n" data-count="70" data-suffix="%">70%</span><span class="l">of the population needed food aid <span class="ref-inline">[5]</span></span></div>
+          <div class="stat"><span class="n" data-prefix="4,000+" >4,000+</span><span class="l">cholera deaths <span class="ref-inline">[5]</span></span></div>
+        </div>
+        <hr class="divider" data-reveal>
+        <div class="split" style="align-items:start">
+          <div class="rows gap-m" data-reveal>
+            <div class="tag"><span class="dot amber"></span>Child undernutrition <span class="ref-inline" style="margin-left:4px">[6]</span></div>
+            <div class="bars">
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Stunted (under 5)</span><span class="hbar-val" data-count="33" data-suffix="%">33%</span></div><div class="hbar-track"><div class="hbar-fill c-amber" style="--w:33%"></div></div></div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Underweight</span><span class="hbar-val" data-count="12" data-suffix="%">12%</span></div><div class="hbar-track"><div class="hbar-fill c-amber" style="--w:12%"></div></div></div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Wasted</span><span class="hbar-val" data-count="7" data-suffix="%">7%</span></div><div class="hbar-track"><div class="hbar-fill c-amber" style="--w:7%"></div></div></div>
+            </div>
+          </div>
+          <div class="card flat rows gap-s" data-reveal>
+            <p class="lead" style="margin:0">Stunting causes “delayed mental development, poor school performance and reduced intellectual capacity.” <span class="ref-inline">[7]</span></p>
+            <p class="sub" style="margin:0">The current generation lacks energy to work; the next is <em class="hl">physiologically impaired</em> before it starts — inflation eroding future human capital.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 10 — ARGENTINA ============ -->
+  <section class="slide" data-act="Act IV · Three Collapses" data-title="Argentina">
+    <div class="stage">
+      <div class="split">
+        <div class="rows gap-m">
+          <div class="eyebrow" data-reveal>Case study · Argentina</div>
+          <h2 class="headline" data-reveal>Stable institutions, chronic instability</h2>
+          <p class="lead" data-reveal>Even a democratic, middle-income economy remains deeply vulnerable. Distrust in the peso drives dollarized savings and defensive, in-the-moment purchases — households plan for <em class="hl">tomorrow's price</em>, not next year's future.</p>
+          <div class="quote" data-reveal>
+            <p>“Financial difficulty is among the strongest predictors of distress — but social cohesion can buffer it.”</p>
+            <cite>— Rosenthal et al. <span class="ref-inline">[11]</span></cite>
+          </div>
+        </div>
+        <div class="rows gap-l" data-reveal style="justify-content:center">
+          <div class="stat"><span class="sublabel">2018 crisis</span><span class="n" data-count="50" data-suffix="%">~50%</span><span class="l">inflation · peso lost ≈ half its value <span class="ref-inline">[9]</span></span></div>
+          <hr class="divider">
+          <div class="stat"><span class="sublabel">2024 · INDEC</span><span class="n ember" data-count="117.8" data-decimals="1" data-suffix="%">117.8%</span><span class="l">annual inflation — the problem persists <span class="ref-inline">[10]</span></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 11 — SURVEY: PSYCH STRAIN ============ -->
+  <section class="slide" data-act="Act V · Inside the Households" data-title="Finding · Psychological strain">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>EconoChori finding · Psychological strain</div>
+        <div class="split">
+          <div class="rows gap-m" data-reveal>
+            <div class="stat"><span class="n ember" data-count="55" data-suffix="%">55%</span><span class="l">answered <em class="hl">nunca</em> — “never” — when asked at what point in the month they can <b>respirar tranquilo</b> (breathe easy). n = 26.</span></div>
+            <p class="sub">Remarkably stable at ≈ 50–55% across the unemployed, changas workers, and the informally salaried alike. Chronic financial stress as a household's <em class="hl">steady state</em>. <span class="ref-inline">[1,11]</span></p>
+          </div>
+          <div class="rows gap-m" data-reveal>
+            <div class="tag"><span class="dot amber"></span>“How do you see the coming year?”</div>
+            <div class="bars">
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label"><em class="hl">No sé</em> — I don't know</span><span class="hbar-val" data-count="43" data-suffix="%">43%</span></div><div class="hbar-track"><div class="hbar-fill c-ember" style="--w:43%"></div></div></div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Better</span><span class="hbar-val" data-count="28" data-suffix="%">28%</span></div><div class="hbar-track"><div class="hbar-fill c-green" style="--w:28%"></div></div></div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Worse</span><span class="hbar-val" data-count="11" data-suffix="%">11%</span></div><div class="hbar-track"><div class="hbar-fill c-amber" style="--w:11%"></div></div></div>
+            </div>
+            <p class="small-note">Hyperinflation doesn't merely produce negative expectations — it impairs the capacity to <em class="hl">form expectations at all</em>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 12 — SURVEY: DEFENSIVE DECISIONS ============ -->
+  <section class="slide" data-act="Act V · Inside the Households" data-title="Finding · Defensive decisions">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>EconoChori finding · Defensive decision-making</div>
+        <h2 class="headline" data-reveal>Marginal income is absorbed by debt, not the future</h2>
+        <div class="grid c3">
+          <div class="card rows gap-s" data-reveal><span class="n mono" style="font-size:clamp(30px,4.4vw,52px); font-weight:600; color:var(--ember)" data-count="62" data-suffix="%">62%</span><p class="sub" style="margin:0">name <b style="color:var(--ink)">debt</b> the most painful expense — more than food, services &amp; rent combined. n = 29.</p></div>
+          <div class="card rows gap-s" data-reveal><span class="n mono" style="font-size:clamp(30px,4.4vw,52px); font-weight:600; color:var(--ember)" data-count="53" data-suffix="%">53%</span><p class="sub" style="margin:0">would use unexpected income to <b style="color:var(--ink)">repay debt</b>. Only 9 would invest; just 1 would save. n = 25.</p></div>
+          <div class="card rows gap-s" data-reveal><span class="n mono" style="font-size:clamp(30px,4.4vw,52px); font-weight:600; color:var(--celeste)" data-count="75" data-suffix="%">75%</span><p class="sub" style="margin:0">want <b style="color:var(--ink)">“stable income”</b> or <b style="color:var(--ink)">“to start a business”</b> as the change they most desire.</p></div>
+        </div>
+        <div class="card flat" data-reveal>
+          <p class="lead" style="margin:0">Survival-focused thinking made visible: income gains service debt instead of building the household stability — or the consumption and investment — that would feed back into GDP. <span class="ref-inline">[11]</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 13 — SURVEY: CONSUMPTION SUBSTITUTION ============ -->
+  <section class="slide" data-act="Act V · Inside the Households" data-title="Finding · Consumption substitution">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>EconoChori finding · Consumption substitution</div>
+        <div class="split">
+          <div class="rows gap-m" data-reveal>
+            <h2 class="headline" data-reveal style="margin:0">The Venezuela pattern, replicated in a stabler economy</h2>
+            <div class="quote">
+              <p>For a country whose identity is built around shared meat, cutting <em class="hl">carne</em> is not a nutrition statistic — it is cultural identity loss.</p>
+              <cite>Pourmotabbed et al. <span class="ref-inline">[17]</span> · echoed in the Argentine data</cite>
+            </div>
+          </div>
+          <div class="rows gap-m" data-reveal>
+            <div class="bars">
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Food among top-3 expenses</span><span class="hbar-val" data-count="89" data-suffix="%">89%</span></div><div class="hbar-track"><div class="hbar-fill c-celeste" style="--w:89%"></div></div></div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Stopped buying <em class="hl">carne</em> (meat)</span><span class="hbar-val" data-count="64" data-suffix="%">64%</span></div><div class="hbar-track"><div class="hbar-fill c-ember" style="--w:64%"></div></div></div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Stopped buying clothing</span><span class="hbar-val" data-count="64" data-suffix="%">64%</span></div><div class="hbar-track"><div class="hbar-fill c-ember" style="--w:64%"></div></div></div>
+              <div class="hbar"><div class="hbar-head"><span class="hbar-label">Stopped leisure / going out</span><span class="hbar-val" data-count="40" data-suffix="%">40%</span></div><div class="hbar-track"><div class="hbar-fill c-amber" style="--w:40%"></div></div></div>
+            </div>
+            <p class="small-note">The “I was upper middle class!” substitution appears here not as one testimony, but as a <em class="hl">majority pattern</em>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 14 — SURVEY: PRODUCTIVE CAPACITY ============ -->
+  <section class="slide" data-act="Act V · Inside the Households" data-title="Finding · Productive capacity">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>EconoChori finding · Eroded productive capacity</div>
+        <h2 class="headline" data-reveal>Capacity exists — capital and access don't</h2>
+        <div class="split">
+          <div class="rows gap-m" data-reveal>
+            <div class="grid c2">
+              <div class="stat"><span class="n celeste" data-count="89" data-suffix="%">89%</span><span class="l">own a mobile phone</span></div>
+              <div class="stat"><span class="n ember" data-count="62" data-suffix="%">62%</span><span class="l">never used / don't know AI. n = 29.</span></div>
+            </div>
+            <hr class="divider">
+            <div class="grid c2">
+              <div class="stat"><span class="n" data-count="55" data-suffix="%">55%</span><span class="l">most lack <em class="hl">trabajo</em> (work)</span></div>
+              <div class="stat"><span class="n" data-count="30" data-suffix="%">30%</span><span class="l">most lack <em class="hl">apoyo</em> (support)</span></div>
+            </div>
+          </div>
+          <div class="rows gap-m" data-reveal>
+            <div class="quote">
+              <p>“…hacer mi verdulería y poder llenarla mejor de mercadería.”</p>
+              <cite>— respondent, 25 · on what she'd do with resources: <em>build her produce stand, stock it fully</em></cite>
+            </div>
+            <div class="card flat">
+              <p class="lead" style="margin:0">Latent micro-entrepreneurial capacity, bottlenecked by <strong class="k">capital, training, and stable employment</strong> — the exact binding margins that targeted FDI operates on. <span class="ref-inline">[20,21]</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 15 — ASADO METAPHOR ============ -->
+  <section class="slide" data-act="Act V · Inside the Households" data-title="The asado metaphor">
+    <div class="stage">
+      <div class="rows gap-m" style="text-align:center; align-items:center">
+        <div class="eyebrow" data-reveal style="justify-content:center">The closing question · “Describe the economy as an asado”</div>
+        <h2 class="headline" data-reveal>Lived language, meeting the official number</h2>
+        <div class="grid c3" data-reveal style="width:100%; max-width:840px">
+          <div class="card"><span class="n mono" style="font-size:clamp(34px,5vw,60px); font-weight:600; color:var(--ember)" data-count="45" data-suffix="%">45%</span><p class="sub" style="margin:6px 0 0"><em class="hl">peleándola</em><br>“scraping by”</p></div>
+          <div class="card"><span class="n mono" style="font-size:clamp(34px,5vw,60px); font-weight:600; color:var(--gold)" data-count="19" data-suffix="%">19%</span><p class="sub" style="margin:6px 0 0"><em style="color:var(--gold);font-style:normal">en crisis</em><br>“in crisis”</p></div>
+          <div class="card"><span class="n mono" style="font-size:clamp(34px,5vw,60px); font-weight:600; color:var(--green)" data-count="6" data-suffix="%">6%</span><p class="sub" style="margin:6px 0 0"><em style="color:var(--green);font-style:normal">creciendo</em><br>“growing”</p></div>
+        </div>
+        <p class="lead" data-reveal style="text-align:center; margin:0 auto">Everyday language mirrors <strong class="k">INDEC's 117.8% figure</strong> — the macro shock is felt accurately even by respondents with little formal economic vocabulary.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 16 — CYCLE WITH DATA ============ -->
+  <section class="slide" data-act="Act V · Inside the Households" data-title="The cycle, measured">
+    <div class="stage">
+      <div class="rows gap-m" style="text-align:center; align-items:center">
+        <div class="eyebrow" data-reveal style="justify-content:center">Figure 1 · The cycle, now measured</div>
+        <p class="lead" data-reveal style="text-align:center; margin:0 auto 4px">Each node carries two layers: the <em class="hl">survey magnitude</em> from EconoChori, over the <em class="hlc">peer-reviewed study</em> that establishes the mechanism.</p>
+        <div class="cycle" data-reveal>
+          <svg viewBox="0 0 560 560" aria-hidden="true">
+            <path class="arc" d="M355 95 Q470 120 465 235"/>
+            <path class="arc" d="M465 325 Q470 440 355 465"/>
+            <path class="arc" d="M205 465 Q90 440 95 325"/>
+            <path class="arc" d="M95 235 Q90 120 205 95"/>
+            <path class="flow" d="M355 95 Q470 120 465 235" marker-end="url(#ah)"/>
+            <path class="flow" d="M465 325 Q470 440 355 465" marker-end="url(#ah)"/>
+            <path class="flow" d="M205 465 Q90 440 95 325" marker-end="url(#ah)"/>
+            <path class="flow" d="M95 235 Q90 120 205 95" marker-end="url(#ah)"/>
+          </svg>
+          <div class="cnode n-top"><div class="ct">Consumption</div><div class="cn"><span data-count="64" data-suffix="%">64%</span></div><div class="cl">stopped buying meat</div><div class="cref">Pourmotabbed [17]</div></div>
+          <div class="cnode n-right"><div class="ct">Psychological</div><div class="cn"><span data-count="55" data-suffix="%">55%</span></div><div class="cl">never “breathe easy”</div><div class="cref">Pathak [1]</div></div>
+          <div class="cnode n-bottom"><div class="ct">Defensive</div><div class="cn"><span data-count="62" data-suffix="%">62%</span></div><div class="cl">debt most painful</div><div class="cref">Rosenthal [11]</div></div>
+          <div class="cnode n-left"><div class="ct">Productive</div><div class="cn"><span data-count="55" data-suffix="%">55%</span></div><div class="cl">lack of work</div><div class="cref">World Bank [20]</div></div>
+          <div class="ccenter"><div class="cc-t">Self-reinforcing</div><div class="cc-n">n = 47</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 17 — PREVIOUS ATTEMPTS ============ -->
+  <section class="slide" data-act="Act VI · Breaking the Cycle" data-title="Why past fixes failed">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>Act VI · Previous attempts</div>
+        <h2 class="headline" data-reveal>Short-term relief, long-term failure</h2>
+        <div class="matrix">
+          <div class="mcard" data-reveal>
+            <div class="mtag">Venezuela</div>
+            <h4>Price controls</h4>
+            <p class="mbody">Caps set below cost destroyed producer incentives — “shortages, smuggling and bankruptcies.” <span class="ref-inline">[12]</span> Relief on paper; empty shelves in reality.</p>
+            <div class="mout">Nutritional deprivation at any price</div>
+          </div>
+          <div class="mcard" data-reveal>
+            <div class="mtag">Zimbabwe</div>
+            <h4>Dollarization</h4>
+            <p class="mbody">Stopped hyperinflation, then triggered deflation. Households with no foreign savings were excluded overnight; sovereignty lost. <span class="ref-inline">[13]</span></p>
+            <div class="mout">Stalled production, new disorientation</div>
+          </div>
+          <div class="mcard" data-reveal>
+            <div class="mtag">Argentina</div>
+            <h4>IMF austerity</h4>
+            <p class="mbody">Unemployment stayed above 9% (peak 10½% in 2019 Q2); “inflation was not brought under control.” Reforms reversed early. <span class="ref-inline">[14]</span></p>
+            <div class="mout">Household stress intensified</div>
+          </div>
+        </div>
+        <p class="lead" data-reveal style="text-align:center; margin:2px auto 0">Each tackled a <em class="hl">single dimension</em> of a multidimensional problem — and each made the side effects worse.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 18 — PROPOSED SOLUTION ============ -->
+  <section class="slide" data-act="Act VI · Breaking the Cycle" data-title="Proposed solution">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>The proposal · a complex problem needs a complex solution</div>
+        <div class="policy">
+          <div class="pol" data-reveal>
+            <div class="pnum">Policy 01 · the monetary brake</div>
+            <h3>An adaptive anti-printing rule</h3>
+            <p class="pd">The central bank must cut money creation whenever inflation accelerates — with <strong class="k">stricter caps as inflation worsens</strong>. It operates monthly and announces changes a week ahead, so households can plan.</p>
+            <div class="pk">Inflation targeting as <b>constrained discretion</b> — proven to lower inflation &amp; volatility across developing economies. <span class="ref-inline">[18,19]</span></div>
+          </div>
+          <div class="pol b" data-reveal>
+            <div class="pnum">Policy 02 · the productive rebuild</div>
+            <h3>Targeted labor-intensive FDI</h3>
+            <p class="pd">Offer unused land, streamlined permits &amp; favorable terms in exchange for <strong class="k">domestic factories &amp; local hiring</strong> — food processing, packaging, basic manufacturing. Jobs, not luxury activity.</p>
+            <div class="pk">A <b>10% rise in FDI → ≈ 1% employment gain</b> across 29 Asia-Pacific nations. <span class="ref-inline">[20,21]</span></div>
+          </div>
+        </div>
+        <div class="card flat" data-reveal>
+          <p class="lead" style="margin:0">Policy 01 addresses hyperinflation's <em class="hl">monetary acceleration</em>; Policy 02 repairs its <em class="hlc">human and productive damage</em>. Neither alone is enough.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 19 — HOW IT BREAKS THE CYCLE ============ -->
+  <section class="slide" data-act="Act VI · Breaking the Cycle" data-title="Interrupting the loop">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>Where the interventions cut in</div>
+        <h2 class="headline" data-reveal>Two levers, aimed at the circuit</h2>
+        <div class="grid c2">
+          <div class="pillar" data-reveal style="border-left:3px solid var(--c-ember)">
+            <div class="ph">Policy 01 cuts here</div>
+            <h4>Price uncertainty → psychological strain</h4>
+            <p>Slowing monetary expansion preserves purchasing power, easing the fear and defensive decision-making that price volatility drives.</p>
+          </div>
+          <div class="pillar" data-reveal style="border-left:3px solid var(--c-celeste)">
+            <div class="ph c">Policy 02 cuts here</div>
+            <h4>Eroded capacity → consumption substitution</h4>
+            <p>Stable employment restores income and food access, rebuilds output, and gives households the dignity and mental space to plan again.</p>
+          </div>
+        </div>
+        <div class="card flat" data-reveal>
+          <p class="lead" style="margin:0">Interrupt <strong class="k">two nodes</strong> and the loop loses its reinforcement: preserved income slows substitution, restored work lifts capacity, and the self-feeding spiral breaks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 20 — STRENGTHS & LIMITATIONS ============ -->
+  <section class="slide" data-act="Act VI · Breaking the Cycle" data-title="Strengths & limitations">
+    <div class="stage">
+      <div class="rows gap-m">
+        <div class="eyebrow" data-reveal>An honest accounting</div>
+        <div class="grid c2">
+          <div class="card rows gap-m" data-reveal style="border-top:3px solid var(--c-green)">
+            <div class="tag"><span class="dot green"></span>Strengths</div>
+            <div class="plist">
+              <div class="pitem"><span class="mk g">+</span><span class="tx">Addresses <b>both cause and consequence</b> — money creation and human damage.</span></div>
+              <div class="pitem"><span class="mk g">+</span><span class="tx">Directly ties to the paper's <b>psychological &amp; physiological</b> thesis.</span></div>
+              <div class="pitem"><span class="mk g">+</span><span class="tx"><b>Realistic</b> versus banning currencies or open-ended subsidy programs.</span></div>
+            </div>
+          </div>
+          <div class="card rows gap-m" data-reveal style="border-top:3px solid var(--c-amber)">
+            <div class="tag"><span class="dot amber"></span>Limitations</div>
+            <div class="plist">
+              <div class="pitem"><span class="mk">−</span><span class="tx">The rule needs <b>credible enforcement</b> — central-bank independence, transparent reporting.</span></div>
+              <div class="pitem"><span class="mk">−</span><span class="tx">FDI needs <b>institutional predictability</b> — works better in Argentina than Venezuela.</span></div>
+              <div class="pitem"><span class="mk">−</span><span class="tx">Factories take time — benefits are <b>medium-term</b>, and terms must be conditional on real jobs.</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="lead" data-reveal style="text-align:center; margin:2px auto 0">The survey mirrors these limits: purposive, single-network, self-reported — <em class="hl">triangulation, not a national poll.</em></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 21 — CONCLUSION ============ -->
+  <section class="slide" data-act="Closing" data-title="Conclusion">
+    <div class="stage">
+      <div class="rows gap-l">
+        <div class="eyebrow" data-reveal>In conclusion</div>
+        <p class="q-big" data-reveal>Hyperinflation is not just a negative economic indicator — it is a cause of <em class="hl">physiological and psychological decomposition</em>.</p>
+        <hr class="divider" data-reveal>
+        <div class="grid c3" data-reveal>
+          <div class="stat"><span class="sublabel">The finding</span><span class="l" style="margin-top:4px">When purchasing power falls, human capital is harmed — across Venezuela, Zimbabwe and Argentina alike.</span></div>
+          <div class="stat"><span class="sublabel">The failure</span><span class="l" style="margin-top:4px">Single-lever fixes — price controls, dollarization, austerity — miss the multidimensional damage.</span></div>
+          <div class="stat"><span class="sublabel">The path</span><span class="l" style="margin-top:4px">Slow monetary expansion <em class="hl">and</em> rebuild productive employment, together.</span></div>
+        </div>
+        <p class="lead" data-reveal>A complex problem requires a complex solution — one that restores not only prices, but <strong class="k">nutrition, dependable work, trust, and mental stability</strong>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 22 — CLOSE / Q&A ============ -->
+  <section class="slide" data-act="Closing" data-title="Thank you">
+    <div class="stage">
+      <div class="rows gap-l" style="text-align:center; align-items:center">
+        <div class="eyebrow" data-reveal style="justify-content:center">Thank you</div>
+        <h1 class="title" data-reveal style="font-size:clamp(34px,5.6vw,68px)">Questions &amp;<br>discussion</h1>
+        <p class="lead" data-reveal style="text-align:center; margin:0 auto">How does hyperinflation generate a self-reinforcing cycle of deterioration — and what can interrupt it?</p>
+        <hr class="divider" data-reveal>
+        <div class="title-meta" data-reveal style="justify-content:center">
+          <span>Massimo Tomás Pastore</span>
+          <span class="sep">/</span>
+          <span>EconoChori · with Damián Di Pace</span>
+          <span class="sep">/</span>
+          <span>UChicago × UCEMA · 2026</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="controls">
+  <button id="prev" aria-label="Previous slide" title="Previous (←)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+  </button>
+  <button id="next" aria-label="Next slide" title="Next (→)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+  </button>
+</div>
+
+<footer class="chrome-bottom">
+  <div class="rail">
+    <div class="act"><span class="n" id="act-num"></span><span id="act-name"></span></div>
+    <div class="count"><b id="cur-num">01</b> / <span id="tot-num">22</span></div>
+  </div>
+  <div class="progress"><i id="prog"></i></div>
+</footer>
+
+<div class="overview" id="overview" aria-hidden="true">
+  <h3>Slide index — click to jump · press O or Esc to close</h3>
+  <div class="ov-grid" id="ov-grid"></div>
+</div>
+
+<script>
+(function(){
+  var deck = document.getElementById('deck');
+  var slides = Array.prototype.slice.call(deck.querySelectorAll('.slide'));
+  var total = slides.length;
+  var current = 0;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.getElementById('tot-num').textContent = pad(total);
+
+  function pad(n){ return (n<10?'0':'')+n; }
+
+  function fmt(v, dec){
+    return v.toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+  }
+
+  function runCount(el){
+    var target = parseFloat(el.getAttribute('data-count'));
+    if(isNaN(target)) return;
+    var dec = parseInt(el.getAttribute('data-decimals')||'0', 10);
+    var suffix = el.getAttribute('data-suffix')||'';
+    var prefix = el.getAttribute('data-prefix')||'';
+    if(reduce){ el.textContent = prefix + fmt(target, dec) + suffix; return; }
+    var dur = 1150, start = null;
+    function tick(now){
+      if(start===null) start = now;
+      var t = Math.min(1, (now-start)/dur);
+      var e = 1 - Math.pow(1-t, 3);
+      el.textContent = prefix + fmt(target*e, dec) + suffix;
+      if(t<1) requestAnimationFrame(tick);
+      else el.textContent = prefix + fmt(target, dec) + suffix;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function activate(slide){
+    var reveals = slide.querySelectorAll('[data-reveal]');
+    for(var i=0;i<reveals.length;i++){ reveals[i].style.setProperty('--ri', i); }
+    // force reflow then reveal so transitions replay
+    void slide.offsetWidth;
+    requestAnimationFrame(function(){
+      slide.classList.add('revealed');
+      var counts = slide.querySelectorAll('[data-count]');
+      // delay counts slightly to sync with reveal
+      setTimeout(function(){
+        for(var j=0;j<counts.length;j++) runCount(counts[j]);
+      }, reduce?0:260);
+    });
+  }
+
+  function render(){
+    for(var i=0;i<total;i++){
+      var s = slides[i];
+      s.classList.remove('is-active','is-before','is-after');
+      if(i===current){ s.classList.add('is-active'); }
+      else{ s.classList.remove('revealed'); s.classList.add(i<current?'is-before':'is-after'); }
+    }
+    activate(slides[current]);
+    // chrome
+    document.getElementById('cur-num').textContent = pad(current+1);
+    document.getElementById('act-num').textContent = '';
+    var act = slides[current].getAttribute('data-act')||'';
+    var parts = act.split('·');
+    document.getElementById('act-num').textContent = parts.length>1 ? parts[0].trim() : '';
+    document.getElementById('act-name').textContent = parts.length>1 ? parts.slice(1).join('·').trim() : act;
+    document.getElementById('prog').style.width = ((current+1)/total*100) + '%';
+    try{ history.replaceState(null,'', '#slide-'+(current+1)); }catch(e){}
+    document.getElementById('prev').style.opacity = current===0?0.3:1;
+    document.getElementById('next').style.opacity = current===total-1?0.3:1;
+    markOverview();
+  }
+
+  function go(n){
+    var nx = Math.max(0, Math.min(total-1, n));
+    if(nx===current) return;
+    current = nx; render();
+  }
+  function next(){ go(current+1); }
+  function prev(){ go(current-1); }
+
+  // keyboard
+  window.addEventListener('keydown', function(e){
+    if(document.getElementById('overview').classList.contains('open')){
+      if(e.key==='Escape'||e.key==='o'||e.key==='O'){ toggleOverview(); e.preventDefault(); }
+      return;
+    }
+    switch(e.key){
+      case 'ArrowRight': case 'PageDown': case ' ': case 'j': next(); e.preventDefault(); break;
+      case 'ArrowLeft': case 'PageUp': case 'k': prev(); e.preventDefault(); break;
+      case 'Home': go(0); e.preventDefault(); break;
+      case 'End': go(total-1); e.preventDefault(); break;
+      case 'o': case 'O': toggleOverview(); e.preventDefault(); break;
+    }
+  });
+
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+
+  // touch swipe
+  var tx=0, ty=0;
+  deck.addEventListener('touchstart', function(e){ tx=e.changedTouches[0].clientX; ty=e.changedTouches[0].clientY; }, {passive:true});
+  deck.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)){ dx<0?next():prev(); }
+  }, {passive:true});
+
+  // click-advance on background (not on interactive elements)
+  deck.addEventListener('click', function(e){
+    if(e.target.closest('a,button,.quote,.card,.pol,.pillar,.mcard,.cnode')) return;
+    // only advance on the right 60% to feel intentional; keep simple: ignore
+  });
+
+  // theme toggle
+  document.getElementById('btn-theme').addEventListener('click', function(){
+    var root = document.documentElement;
+    var cur = root.getAttribute('data-theme');
+    if(!cur){
+      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      cur = dark ? 'dark' : 'light';
+    }
+    root.setAttribute('data-theme', cur==='dark'?'light':'dark');
+  });
+
+  // overview
+  var ov = document.getElementById('overview');
+  var ovGrid = document.getElementById('ov-grid');
+  slides.forEach(function(s, i){
+    var b = document.createElement('button');
+    b.className = 'ov-item';
+    var act = (s.getAttribute('data-act')||'').replace(/·/g,'·');
+    b.innerHTML = '<span class="oi-n">'+pad(i+1)+'</span><span class="oi-t">'+(s.getAttribute('data-title')||'')+'</span><span class="oi-a">'+act+'</span>';
+    b.addEventListener('click', function(){ toggleOverview(); go(i); });
+    ovGrid.appendChild(b);
+  });
+  function markOverview(){
+    var items = ovGrid.children;
+    for(var i=0;i<items.length;i++){ items[i].classList.toggle('here', i===current); }
+  }
+  function toggleOverview(){
+    var open = ov.classList.toggle('open');
+    ov.setAttribute('aria-hidden', open?'false':'true');
+    document.getElementById('btn-overview').classList.toggle('active', open);
+  }
+  document.getElementById('btn-overview').addEventListener('click', toggleOverview);
+
+  // init from hash
+  var m = (location.hash||'').match(/slide-(\d+)/);
+  if(m){ current = Math.max(0, Math.min(total-1, parseInt(m[1],10)-1)); }
+  render();
+  deck.focus({preventScroll:true});
+})();
+</script>
