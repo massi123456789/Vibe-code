@@ -43,7 +43,8 @@ export default async (request, context) => {
     mock = true;
   } else {
     try {
-      ({ jobs, totalCount, diag } = await searchJooble(profile));
+      // raw.debugHost: sonda temporal de diagnóstico (allowlist en jooble.mjs).
+      ({ jobs, totalCount, diag } = await searchJooble(profile, typeof raw.debugHost === 'string' ? raw.debugHost : undefined));
     } catch (err) {
       console.error('search-jobs (jooble) error:', err.message);
       return json({

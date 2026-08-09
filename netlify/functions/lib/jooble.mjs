@@ -33,11 +33,16 @@ export function buildSearchQuery(profile) {
  * Una llamada real a Jooble. Devuelve la lista normalizada de ofertas.
  * La clave vive SOLO en JOOBLE_API_KEY.
  */
-export async function searchJooble(profile) {
+// TEMPORAL (diagnóstico): subdominios de país permitidos para probar la key.
+// Se elimina cuando confirmemos el host correcto.
+const DEBUG_HOSTS = new Set(['ar', 'us', 'www']);
+
+export async function searchJooble(profile, debugHost) {
   const apiKey = process.env.JOOBLE_API_KEY;
   if (!apiKey) throw Object.assign(new Error('JOOBLE_API_KEY no configurada'), { status: 503 });
 
-  const host = process.env.JOOBLE_API_HOST || 'https://jooble.org';
+  let host = process.env.JOOBLE_API_HOST || 'https://jooble.org';
+  if (debugHost && DEBUG_HOSTS.has(debugHost)) host = `https://${debugHost}.jooble.org`;
   const { keywords, location } = buildSearchQuery(profile);
   const res = await fetch(`${host}/api/${apiKey}`, {
     method: 'POST',
@@ -50,7 +55,7 @@ export async function searchJooble(profile) {
     }),
   });
   if (!res.ok) {
-    throw Object.assign(new Error(`Jooble respondió ${res.status}`), { status: 502 });
+    throw Object.assign(new Error(`Jooble respondió ${res.status} (host ${host.replace('https://', '')})`), { status: 502 });
   }
   const data = await res.json();
   const rawJobs = Array.isArray(data?.jobs) ? data.jobs : [];
