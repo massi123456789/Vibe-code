@@ -15,7 +15,12 @@ Las llamadas de producción no se anotan (las hace la gente al usar la herramien
 |-------|----------|-------------------------------|
 | 2026-08-09 | 5 | Verificación final en producción: "atención al cliente"+Buenos Aires (8.378 resultados), "repositor"+Buenos Aires (49), "limpieza"+CABA (1.200), chequeo de secretos y E2E completo del flujo. Todo OK. |
 
-**Total usado de la key argentina: 5 de ~500.**
+| 2026-08-09 | ~15 | Mejoras post-feedback: verificación de búsqueda ampliada (0 resultados → búsqueda por zona), títulos traducidos al español en las tarjetas (varias iteraciones de prompt hasta lograr cumplimiento del modelo) y E2E visual final. |
+
+**Total usado de la key argentina: ~20 de ~500.**
+
+Nota: cada búsqueda de usuario ahora puede usar hasta 2 requests de Jooble
+(la segunda solo si el término exacto devuelve 0 resultados).
 
 ## Estado de la integración Jooble (2026-08-09) — ✅ FUNCIONANDO
 
