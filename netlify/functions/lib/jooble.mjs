@@ -37,7 +37,7 @@ export async function searchJooble(profile) {
   const apiKey = process.env.JOOBLE_API_KEY;
   if (!apiKey) throw Object.assign(new Error('JOOBLE_API_KEY no configurada'), { status: 503 });
 
-  const host = process.env.JOOBLE_API_HOST || 'https://jooble.org';
+  const host = process.env.JOOBLE_API_HOST || 'https://ar.jooble.org';
   const { keywords, location } = buildSearchQuery(profile);
   const res = await fetch(`${host}/api/${apiKey}`, {
     method: 'POST',
