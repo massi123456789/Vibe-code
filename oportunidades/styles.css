@@ -1,0 +1,253 @@
+/* EconoChori Oportunidades — estilos.
+   Reusa la identidad visual del sitio principal (mismos tokens de color y
+   tipografía) pero con un tono más calmo y utilitario. Mobile-first. */
+
+:root{
+  --paper:#FBF7F0;
+  --paper-2:#F4ECDE;
+  --card:#FFFFFF;
+  --ink:#1F2C49;
+  --ink-soft:#4a5673;
+  --orange:#FA9302;
+  --orange-dark:#d97e00;
+  --blue:#006EBA;
+  --red:#B3261E;
+  --green:#3C613D;
+  --line:#E7DDCB;
+  --line-2:#d8ccb4;
+  --shadow:0 1px 2px rgba(31,44,73,.04),0 8px 24px -12px rgba(31,44,73,.14);
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'Urbanist',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+}
+a{color:var(--blue)}
+img{max-width:100%;display:block}
+.wrap{width:100%;max-width:720px;margin:0 auto;padding:0 18px}
+
+/* ---------- Header ---------- */
+header.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(251,247,240,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;height:60px;max-width:720px;margin:0 auto;padding:0 18px}
+.brand{font-weight:900;font-size:1.08rem;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
+.brand b{color:var(--orange)}
+.brand small{display:block;font-weight:600;font-size:.7rem;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase;margin-top:-2px}
+.back-link{font-size:.88rem;font-weight:600;color:var(--ink-soft);text-decoration:none}
+.back-link:hover{color:var(--ink)}
+
+main{flex:1;padding:26px 0 48px}
+
+/* ---------- Botones ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5em;
+  font-family:var(--sans);font-weight:700;font-size:1.02rem;
+  padding:.9em 1.5em;border-radius:999px;
+  border:2px solid transparent;cursor:pointer;text-decoration:none;
+  min-height:48px;line-height:1.15;text-align:center;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.btn-primary{background:var(--orange);color:#fff;box-shadow:0 8px 20px -8px rgba(250,147,2,.7)}
+.btn-primary:hover{background:var(--orange-dark)}
+.btn-primary:disabled{background:#e0c9a2;box-shadow:none;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn-ghost:hover{border-color:var(--ink)}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-sm{font-size:.9rem;padding:.55em 1.1em;min-height:40px}
+.btn-block{width:100%}
+
+/* ---------- Landing ---------- */
+.hero-op{padding:16px 0 8px}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:600}
+.hero-op h1{font-size:clamp(1.9rem,6.5vw,2.7rem);line-height:1.08;font-weight:900;letter-spacing:-.02em;margin:.5rem 0 .9rem}
+.hero-op h1 .hl{color:var(--orange)}
+.hero-op .lead{font-size:1.05rem;color:var(--ink-soft);font-weight:500;max-width:46ch}
+.hero-cta{display:flex;flex-direction:column;gap:.7rem;margin:1.4rem 0 .6rem}
+.hero-note{font-size:.92rem;color:var(--ink-soft)}
+.benefits{display:grid;gap:14px;margin:2rem 0 1rem}
+@media(min-width:600px){
+  .hero-cta{flex-direction:row}
+  .benefits{grid-template-columns:repeat(3,1fr)}
+}
+.benefit{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:18px;box-shadow:var(--shadow);
+}
+.benefit .num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:50%;
+  background:var(--paper-2);color:var(--orange-dark);
+  font-family:var(--mono);font-weight:700;font-size:.9rem;margin-bottom:.6rem;
+}
+.benefit h3{font-size:1.02rem;margin-bottom:.25rem}
+.benefit p{font-size:.92rem;color:var(--ink-soft)}
+.trust-line{font-size:.85rem;color:var(--ink-soft);margin-top:1.2rem;border-top:1px solid var(--line);padding-top:1rem}
+
+/* ---------- Wizard ---------- */
+.progress{margin-bottom:1.2rem}
+.progress .step-label{font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:.4rem;display:block}
+.progress .bar{height:8px;background:var(--paper-2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.progress .fill{height:100%;background:var(--orange);border-radius:99px;transition:width .25s ease}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:22px 18px;box-shadow:var(--shadow);
+}
+@media(min-width:600px){.card{padding:28px}}
+.card h2{font-size:1.35rem;line-height:1.2;margin-bottom:.35rem}
+.card .hint{color:var(--ink-soft);font-size:.95rem;margin-bottom:1.1rem}
+
+.field{margin-bottom:1.05rem}
+.field label{display:block;font-weight:700;font-size:.97rem;margin-bottom:.35rem}
+.field .sub{display:block;font-weight:500;font-size:.85rem;color:var(--ink-soft);margin-top:.15rem}
+.field .optional{font-weight:500;color:var(--ink-soft);font-size:.85rem}
+input[type=text],input[type=email],input[type=tel],textarea,select{
+  width:100%;font-family:var(--sans);font-size:1.02rem;color:var(--ink);
+  background:#fff;border:2px solid var(--line-2);border-radius:12px;
+  padding:.78em .9em;min-height:48px;
+}
+textarea{min-height:110px;resize:vertical;line-height:1.5}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue)}
+.field .examples{font-size:.85rem;color:var(--ink-soft);margin-top:.35rem}
+.field-error{color:var(--red);font-size:.88rem;font-weight:600;margin-top:.3rem}
+input[aria-invalid="true"],textarea[aria-invalid="true"]{border-color:var(--red)}
+
+.radio-group{display:grid;gap:.55rem}
+.radio-pill{
+  display:flex;align-items:center;gap:.6rem;
+  border:2px solid var(--line-2);border-radius:12px;
+  padding:.72em .9em;cursor:pointer;font-weight:600;font-size:.98rem;
+  background:#fff;min-height:48px;
+}
+.radio-pill:has(input:checked){border-color:var(--orange);background:#fff8ee}
+.radio-pill input{width:20px;height:20px;accent-color:var(--orange);flex:0 0 auto}
+
+.wizard-nav{display:flex;gap:.7rem;margin-top:1.4rem;flex-wrap:wrap}
+.wizard-nav .btn{flex:1;min-width:130px}
+
+/* Experiencias */
+.exp-item{
+  border:1px solid var(--line);border-radius:12px;background:var(--paper);
+  padding:14px;margin-bottom:.8rem;
+}
+.exp-item .exp-head{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem}
+.exp-item .exp-title{font-weight:700;font-size:.98rem}
+.exp-item .exp-meta{font-size:.85rem;color:var(--ink-soft)}
+.exp-actions{display:flex;gap:.9rem;margin-top:.5rem}
+.link-btn{background:none;border:none;color:var(--blue);font-weight:700;font-size:.9rem;cursor:pointer;padding:.35em .2em;font-family:var(--sans)}
+.link-btn.danger{color:var(--red)}
+
+/* Micrófono */
+.mic-row{display:flex;justify-content:flex-end;margin-top:.35rem}
+.mic-btn{
+  display:inline-flex;align-items:center;gap:.45em;
+  background:var(--paper-2);border:1px solid var(--line-2);border-radius:999px;
+  font-family:var(--sans);font-size:.85rem;font-weight:600;color:var(--ink-soft);
+  padding:.5em .95em;cursor:pointer;min-height:40px;
+}
+.mic-btn[aria-pressed="true"]{background:#ffe9e6;border-color:var(--red);color:var(--red)}
+
+/* Consentimiento */
+.consent-box{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:1rem;font-size:.96rem}
+.check-row{display:flex;gap:.7rem;align-items:flex-start;font-weight:600;cursor:pointer;font-size:1rem}
+.check-row input{width:22px;height:22px;accent-color:var(--orange);flex:0 0 auto;margin-top:2px}
+
+/* Revisión del CV */
+.notice{
+  display:flex;gap:.6rem;align-items:flex-start;
+  background:#eef5fb;border:1px solid #cadff0;border-radius:12px;
+  padding:12px 14px;font-size:.9rem;color:var(--ink);margin-bottom:1.1rem;
+}
+.review-section{border-top:1px solid var(--line);padding-top:1rem;margin-top:1rem}
+.review-section h3{font-size:1.02rem;margin-bottom:.5rem}
+
+/* Vista previa del CV */
+.cv-preview{
+  background:#fff;border:1px solid var(--line-2);border-radius:8px;
+  padding:26px 22px;box-shadow:var(--shadow);
+  font-size:.92rem;line-height:1.5;color:#111;
+  margin:1.1rem 0;
+}
+.cv-preview h2{font-size:1.4rem;letter-spacing:-.01em;margin:0 0 .15rem;color:#111}
+.cv-preview .cv-contact{font-size:.83rem;color:#444;border-bottom:2px solid #222;padding-bottom:.6rem;margin-bottom:.8rem}
+.cv-preview h3{
+  font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:#222;
+  border-bottom:1px solid #bbb;padding-bottom:.2rem;margin:1rem 0 .45rem;
+}
+.cv-preview .cv-exp{margin-bottom:.65rem}
+.cv-preview .cv-exp-head{display:flex;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
+.cv-preview .cv-exp-title{font-weight:700}
+.cv-preview .cv-exp-dates{color:#555;font-size:.85rem}
+.cv-preview .cv-exp-org{color:#444;font-size:.88rem}
+.cv-preview ul{margin:.25rem 0 0 1.1rem}
+.cv-preview li{margin-bottom:.15rem}
+
+/* Ofertas */
+.job-card{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:16px;margin-bottom:.9rem;box-shadow:var(--shadow);
+}
+.job-badge{
+  display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;border-radius:999px;
+  padding:.3em .8em;margin-bottom:.5rem;border:1px solid transparent;
+}
+.job-badge.muy-compatible{background:#e7f0e7;color:var(--green);border-color:#c4d6c4}
+.job-badge.compatible{background:#e8f1f9;color:var(--blue);border-color:#c6dcee}
+.job-badge.podria-interesarte{background:var(--paper-2);color:var(--ink-soft);border-color:var(--line-2)}
+.job-card h3{font-size:1.08rem;margin-bottom:.15rem}
+.job-card .job-org{font-size:.92rem;color:var(--ink-soft);font-weight:600}
+.job-card .job-loc{font-size:.9rem;color:var(--ink-soft);margin:.15rem 0 .45rem}
+.job-card .job-reason{font-size:.93rem;margin:.4rem 0 .7rem}
+.job-card .job-reason b{font-weight:700}
+.job-card .job-source{font-size:.8rem;color:var(--ink-soft);margin-top:.5rem}
+
+/* Estados */
+.state-box{text-align:center;padding:2.2rem 1rem}
+.state-box h2{margin-bottom:.5rem}
+.state-box p{color:var(--ink-soft);max-width:44ch;margin:0 auto 1.2rem}
+.spinner{
+  width:44px;height:44px;border-radius:50%;margin:0 auto 1.1rem;
+  border:4px solid var(--paper-2);border-top-color:var(--orange);
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:2s}}
+.error-box{background:#fdf0ef;border:1px solid #f0cfcc;border-radius:12px;padding:14px 16px;color:var(--red);font-weight:600;margin-bottom:1rem}
+
+/* Outcome */
+.outcome-grid{display:grid;gap:.6rem;margin-top:1rem}
+@media(min-width:600px){.outcome-grid{grid-template-columns:1fr 1fr}}
+
+/* ---------- Footer ---------- */
+footer.op-foot{border-top:1px solid var(--line);padding:20px 0 30px;background:var(--paper-2)}
+footer.op-foot .wrap{font-size:.83rem;color:var(--ink-soft)}
+footer.op-foot p{margin-bottom:.4rem}
+footer.op-foot .foot-links{margin-top:.6rem;display:flex;gap:1.2rem;flex-wrap:wrap}
+footer.op-foot a{font-weight:600}
+
+/* ---------- Modal privacidad ---------- */
+dialog.privacy{
+  border:none;border-radius:16px;max-width:560px;width:calc(100% - 32px);
+  padding:24px 22px;box-shadow:var(--shadow);color:var(--ink);
+}
+dialog.privacy::backdrop{background:rgba(31,44,73,.45)}
+dialog.privacy h2{margin-bottom:.7rem}
+dialog.privacy p,dialog.privacy li{font-size:.93rem;color:var(--ink-soft);margin-bottom:.6rem}
+dialog.privacy ul{margin:0 0 .6rem 1.2rem}
+dialog.privacy .btn{margin-top:.4rem}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
