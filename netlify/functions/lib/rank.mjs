@@ -22,7 +22,10 @@ export const RANK_JSON_SCHEMA = {
             category: { type: 'string', enum: CATEGORIES },
             reason: { type: 'string' },
             rank: { type: 'integer' },
-            titleEs: { type: 'string' },
+            titleEs: {
+              type: 'string',
+              description: 'Título de la oferta TRADUCIDO al español argentino cuando el original está en inglés u otro idioma (ej. "Customer Service Representative" → "Representante de Atención al Cliente"). Si ya está completamente en español, repetí el título exacto. Nunca agregues ubicación ni empresa.',
+            },
           },
           required: ['jobId', 'category', 'reason', 'rank', 'titleEs'],
         },
@@ -57,6 +60,7 @@ export function buildRankUserPrompt(profile, jobs) {
   for (const j of jobs) {
     p.push(`[${j.id}] ${j.title}${j.company ? ` — ${j.company}` : ''} (${j.location}). ${j.snippet}`);
   }
+  p.push('', 'Recordá: en titleEs traducí al español los títulos que estén en inglés (los que ya están en español se repiten tal cual).');
   return p.join('\n');
 }
 
