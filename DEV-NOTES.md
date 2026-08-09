@@ -7,19 +7,19 @@ Las llamadas de producción no se anotan (las hace la gente al usar la herramien
 
 | Fecha | Cantidad | Motivo |
 |-------|----------|--------|
-| — | 0 | Todo el desarrollo se hizo con mocks (`MOCK_JOBS`). Aún no se hicieron llamadas reales. |
+| 2026-08-09 | ~12 | Test de integración en producción. Hallazgo: la key está vinculada a EE.UU. (jooble.org/us.jooble.org devuelven ofertas de Miami; ar.jooble.org responde 403; búsquedas argentinas devuelven totalCount 0). Se necesita una key del sitio argentino de Jooble. |
 
-**Total usado en desarrollo: 0**
+**Total usado en desarrollo: ~12** (las respuestas 403 probablemente no consumen cuota)
 
-## Prueba de integración real pendiente (requiere JOOBLE_API_KEY)
+## Estado de la integración Jooble (2026-08-09)
 
-Cuando la key esté configurada, hacer estas 4 búsquedas (≈4 requests) y
-verificar que el parsing de la respuesta real coincida con `lib/jooble.mjs`:
-
-1. Buenos Aires + "atención al cliente"
-2. Buenos Aires + "repositor"
-3. CABA (se normaliza a "Buenos Aires") + "limpieza"
-4. Buenos Aires + "ayudante de cocina"
+- Parsing verificado contra la API real: la respuesta es `{totalCount, jobs:[...]}`
+  con los campos esperados por `lib/jooble.mjs`. ✅ (verificado con ofertas de Miami)
+- **Pendiente**: reemplazar `JOOBLE_API_KEY` en Netlify por una key emitida para
+  Argentina (solicitarla desde https://ar.jooble.org/api/about). Con la key actual
+  (EE.UU.), toda búsqueda argentina devuelve 0 y la UI muestra el estado vacío.
+- Cuando llegue la key AR: rehacer 2-3 búsquedas de control (Buenos Aires +
+  "atención al cliente" / "repositor") y anotar acá.
 
 ## Modos mock
 

@@ -35,7 +35,6 @@ export default async (request, context) => {
   // 1) Conseguir ofertas (mock en desarrollo para cuidar la cuota de Jooble).
   let jobs;
   let totalCount = 0;
-  let diag;
   let mock = false;
   if (USE_MOCK_JOBS) {
     jobs = MOCK_JOBS;
@@ -43,8 +42,7 @@ export default async (request, context) => {
     mock = true;
   } else {
     try {
-      // raw.debugHost: sonda temporal de diagnóstico (allowlist en jooble.mjs).
-      ({ jobs, totalCount, diag } = await searchJooble(profile, typeof raw.debugHost === 'string' ? raw.debugHost : undefined));
+      ({ jobs, totalCount } = await searchJooble(profile));
     } catch (err) {
       console.error('search-jobs (jooble) error:', err.message);
       return json({
@@ -55,7 +53,7 @@ export default async (request, context) => {
   }
 
   if (!jobs.length) {
-    return json({ jobs: [], mock, totalCount, diag, message: 'No encontramos suficientes oportunidades con esta búsqueda. Probemos con una búsqueda un poco más amplia.' });
+    return json({ jobs: [], mock, totalCount, message: 'No encontramos suficientes oportunidades con esta búsqueda. Probemos con una búsqueda un poco más amplia.' });
   }
 
   // 2) Rankear: primero con IA (pocas ofertas, prompt corto); fallback keywords.
