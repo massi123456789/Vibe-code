@@ -40,7 +40,7 @@ REGLAS:
 - Nunca digas que la persona está garantizada a calificar o a ser contratada.
 - category: "muy-compatible" solo con coincidencia clara de experiencia/habilidades; "compatible" con coincidencia parcial; "podria-interesarte" si es plausible como puesto de entrada cercano.
 - rank: 1 = mejor. Incluí todas las ofertas provistas.
-- titleEs: traducción fiel al español del título de la oferta cuando el original está total o parcialmente en otro idioma (ej. "Cost Engineer" → "Ingeniero/a de Costos", "IT recruiter" → "Reclutador/a IT"). Si el título ya está completamente en español, devolvé el título original EXACTO. Traducí solo el título: no agregues ubicación, empresa, aclaraciones ni cambies el nivel o la jerarquía del puesto.`;
+- titleEs es OBLIGATORIO en cada oferta. Si el título está en inglés u otro idioma, traducilo completo y fiel al español: "Cost Engineer" → "Ingeniero/a de Costos", "Warehouse Coordinator" → "Coordinador/a de Depósito", "In Store Specialist" → "Especialista de Tienda", "Strategic Buyer" → "Comprador/a Estratégico/a". Solo si el título ya está completamente en español, repetí el original exacto. Mantené siglas y términos sin traducción usual en Argentina (IT, RRHH, Excel, freelance). Traducí solo el título: sin ubicación, empresa ni aclaraciones, y sin cambiar el nivel del puesto.`;
 
 /** Prompt de usuario compacto para el ranking. */
 export function buildRankUserPrompt(profile, jobs) {
