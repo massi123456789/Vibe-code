@@ -9,17 +9,24 @@ Las llamadas de producción no se anotan (las hace la gente al usar la herramien
 |-------|----------|--------|
 | 2026-08-09 | ~12 | Test de integración en producción. Hallazgo: la key está vinculada a EE.UU. (jooble.org/us.jooble.org devuelven ofertas de Miami; ar.jooble.org responde 403; búsquedas argentinas devuelven totalCount 0). Se necesita una key del sitio argentino de Jooble. |
 
-**Total usado en desarrollo: ~12** (las respuestas 403 probablemente no consumen cuota)
+**Key de EE.UU. (rotada, ya no se usa): ~12 requests de diagnóstico.**
 
-## Estado de la integración Jooble (2026-08-09)
+| Fecha | Cantidad | Motivo (key ARGENTINA actual) |
+|-------|----------|-------------------------------|
+| 2026-08-09 | 5 | Verificación final en producción: "atención al cliente"+Buenos Aires (8.378 resultados), "repositor"+Buenos Aires (49), "limpieza"+CABA (1.200), chequeo de secretos y E2E completo del flujo. Todo OK. |
 
-- Parsing verificado contra la API real: la respuesta es `{totalCount, jobs:[...]}`
-  con los campos esperados por `lib/jooble.mjs`. ✅ (verificado con ofertas de Miami)
-- **Pendiente**: reemplazar `JOOBLE_API_KEY` en Netlify por una key emitida para
-  Argentina (solicitarla desde https://ar.jooble.org/api/about). Con la key actual
-  (EE.UU.), toda búsqueda argentina devuelve 0 y la UI muestra el estado vacío.
-- Cuando llegue la key AR: rehacer 2-3 búsquedas de control (Buenos Aires +
-  "atención al cliente" / "repositor") y anotar acá.
+**Total usado de la key argentina: 5 de ~500.**
+
+## Estado de la integración Jooble (2026-08-09) — ✅ FUNCIONANDO
+
+- Key argentina configurada en Netlify; host por defecto `ar.jooble.org`
+  (las keys de Jooble solo autentican en el host del país que las emitió;
+  overrideable con `JOOBLE_API_HOST`).
+- Parsing verificado contra la API real: `{totalCount, jobs:[...]}`. ✅
+- Búsquedas argentinas devuelven ofertas reales (CABA y Provincia). ✅
+- Nota: las páginas de ofertas de Jooble usan Cloudflare; desde IPs de
+  datacenter devuelven un desafío ("Just a moment..."), pero los navegadores
+  reales de las personas pasan ese chequeo normalmente.
 
 ## Modos mock
 
