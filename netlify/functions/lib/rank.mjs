@@ -24,7 +24,7 @@ export const RANK_JSON_SCHEMA = {
             rank: { type: 'integer' },
             titleEs: {
               type: 'string',
-              description: 'Título de la oferta TRADUCIDO al español argentino cuando el original está en inglés u otro idioma (ej. "Customer Service Representative" → "Representante de Atención al Cliente"). Si ya está completamente en español, repetí el título exacto. Nunca agregues ubicación ni empresa.',
+              description: 'El título del puesto escrito en español, SIEMPRE. "Customer Service Representative" se escribe "Representante de Atención al Cliente"; "Cost Engineer" se escribe "Ingeniero/a de Costos". Un título que ya está en español se copia exacto. Solo el título: sin ubicación ni empresa.',
             },
           },
           required: ['jobId', 'category', 'reason', 'rank', 'titleEs'],
@@ -43,7 +43,7 @@ REGLAS:
 - Nunca digas que la persona está garantizada a calificar o a ser contratada.
 - category: "muy-compatible" solo con coincidencia clara de experiencia/habilidades; "compatible" con coincidencia parcial; "podria-interesarte" si es plausible como puesto de entrada cercano.
 - rank: 1 = mejor. Incluí todas las ofertas provistas.
-- titleEs es OBLIGATORIO en cada oferta. Si el título está en inglés u otro idioma, traducilo completo y fiel al español: "Cost Engineer" → "Ingeniero/a de Costos", "Warehouse Coordinator" → "Coordinador/a de Depósito", "In Store Specialist" → "Especialista de Tienda", "Strategic Buyer" → "Comprador/a Estratégico/a". Solo si el título ya está completamente en español, repetí el original exacto. Mantené siglas y términos sin traducción usual en Argentina (IT, RRHH, Excel, freelance). Traducí solo el título: sin ubicación, empresa ni aclaraciones, y sin cambiar el nivel del puesto.`;
+- titleEs: escribí el título del puesto EN ESPAÑOL, siempre. Nada de títulos en inglés en titleEs: "Warehouse Coordinator" → "Coordinador/a de Depósito", "In Store Specialist" → "Especialista de Tienda". Mantené siglas usuales (IT, RRHH, Excel). Traducción fiel: sin cambiar el nivel del puesto, sin agregar ubicación ni empresa.`;
 
 /** Prompt de usuario compacto para el ranking. */
 export function buildRankUserPrompt(profile, jobs) {
@@ -60,7 +60,7 @@ export function buildRankUserPrompt(profile, jobs) {
   for (const j of jobs) {
     p.push(`[${j.id}] ${j.title}${j.company ? ` — ${j.company}` : ''} (${j.location}). ${j.snippet}`);
   }
-  p.push('', 'Recordá: en titleEs traducí al español los títulos que estén en inglés (los que ya están en español se repiten tal cual).');
+  p.push('', 'Recordá: titleEs va SIEMPRE en español. Traducí todo título que esté en inglés.');
   return p.join('\n');
 }
 
