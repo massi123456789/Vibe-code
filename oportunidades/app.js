@@ -746,8 +746,16 @@ screens.jobs = () => {
     });
 };
 
+// Título para mostrar: la traducción al español si la hay y difiere del
+// original. El título real de la oferta nunca se pierde: se muestra debajo.
+function jobDisplayTitle(j) {
+  const norm = (s) => (s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const translated = j.titleEs && norm(j.titleEs) !== norm(j.title);
+  return { heading: translated ? j.titleEs : j.title, original: translated ? j.title : '' };
+}
+
 function renderJobsResult() {
-  const { jobs = [], mock, message } = state.jobsResult || {};
+  const { jobs = [], mock, broadened, message } = state.jobsResult || {};
 
   if (!jobs.length) {
     app.innerHTML = `
@@ -773,19 +781,24 @@ function renderJobsResult() {
       <h2>Oportunidades para vos</h2>
       <p class="hint">Ordenadas según tu perfil. Las oportunidades son publicadas por terceros: revisá siempre los requisitos antes de postularte.</p>
       ${mock ? '<div class="notice"><span aria-hidden="true">🧪</span><span>Estás viendo ofertas de ejemplo (modo de prueba). Las ofertas reales aparecen cuando la búsqueda está conectada.</span></div>' : ''}
+      ${broadened ? '<div class="notice"><span aria-hidden="true">🔎</span><span>No encontramos resultados exactos para lo que escribiste, así que ampliamos la búsqueda a otras oportunidades en tu zona.</span></div>' : ''}
     </div>
     <div id="jobList">
-      ${jobs.map((j) => `
+      ${jobs.map((j) => {
+        const t = jobDisplayTitle(j);
+        return `
         <article class="job-card">
           <span class="job-badge ${esc(j.category)}">${esc(CATEGORY_LABELS[j.category] || 'Podría interesarte')}</span>
-          <h3>${esc(j.title)}</h3>
+          <h3>${esc(t.heading)}</h3>
+          ${t.original ? `<p class="job-original">Título original: ${esc(t.original)}</p>` : ''}
           ${j.company ? `<p class="job-org">${esc(j.company)}</p>` : ''}
           <p class="job-loc">📍 ${esc(j.location || 'Argentina')}</p>
           ${j.salary ? `<p class="job-loc">💰 ${esc(j.salary)}</p>` : ''}
           ${j.reason ? `<p class="job-reason"><b>Por qué puede encajar:</b> ${esc(j.reason)}</p>` : ''}
           <a class="btn btn-blue btn-sm" href="${esc(j.url)}" target="_blank" rel="noopener nofollow" data-joblink>Ver oportunidad</a>
           <p class="job-source">Publicada por terceros${j.source ? ` · ${esc(j.source)}` : ''}. EconoChori no es el empleador.</p>
-        </article>`).join('')}
+        </article>`;
+      }).join('')}
     </div>
     <div class="card" style="margin-top:1rem">
       <h2>¿Querés contarnos cómo te fue?</h2>

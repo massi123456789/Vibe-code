@@ -22,8 +22,9 @@ export const RANK_JSON_SCHEMA = {
             category: { type: 'string', enum: CATEGORIES },
             reason: { type: 'string' },
             rank: { type: 'integer' },
+            titleEs: { type: 'string' },
           },
-          required: ['jobId', 'category', 'reason', 'rank'],
+          required: ['jobId', 'category', 'reason', 'rank', 'titleEs'],
         },
       },
     },
@@ -38,7 +39,8 @@ REGLAS:
 - "reason": una frase corta (máx. 25 palabras) que explique por qué puede encajar, basada SOLO en el perfil real y el texto real de la oferta. Frase natural tipo "Tu experiencia en X coincide con las tareas de este puesto".
 - Nunca digas que la persona está garantizada a calificar o a ser contratada.
 - category: "muy-compatible" solo con coincidencia clara de experiencia/habilidades; "compatible" con coincidencia parcial; "podria-interesarte" si es plausible como puesto de entrada cercano.
-- rank: 1 = mejor. Incluí todas las ofertas provistas.`;
+- rank: 1 = mejor. Incluí todas las ofertas provistas.
+- titleEs: traducción fiel al español del título de la oferta cuando el original está en otro idioma (ej. "Cost Engineer" → "Ingeniero/a de Costos"). Si el título ya está en español, devolvé el título original tal cual. Traducí, no embellezcas: no cambies el nivel ni la jerarquía del puesto.`;
 
 /** Prompt de usuario compacto para el ranking. */
 export function buildRankUserPrompt(profile, jobs) {
@@ -104,6 +106,7 @@ export function keywordRank(profile, jobs) {
     ...s.job,
     category: s.category,
     reason: s.reason,
+    titleEs: '', // sin IA no traducimos: se muestra el título original
     rank: i + 1,
   }));
 }
@@ -131,6 +134,9 @@ export function sanitizeAiRanking(aiOutput, jobs) {
       ...job,
       category: CATEGORIES.includes(m.category) ? m.category : 'podria-interesarte',
       reason: typeof m.reason === 'string' ? m.reason.slice(0, 220) : '',
+      // Traducción solo para mostrar: el título real de la oferta (job.title)
+      // nunca se toca y siempre viaja junto a ella.
+      titleEs: typeof m.titleEs === 'string' ? m.titleEs.slice(0, 120) : '',
       rank: ranked.length + 1,
     });
   }
@@ -140,6 +146,7 @@ export function sanitizeAiRanking(aiOutput, jobs) {
       ...job,
       category: 'podria-interesarte',
       reason: '',
+      titleEs: '',
       rank: ranked.length + 1,
     });
   }

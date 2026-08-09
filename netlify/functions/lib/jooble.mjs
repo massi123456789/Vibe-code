@@ -30,15 +30,26 @@ export function buildSearchQuery(profile) {
 }
 
 /**
+ * Búsqueda más amplia para cuando el término exacto no encuentra nada:
+ * solo por ubicación, sin keywords. El ranking (IA o keywords) se encarga
+ * después de ordenar lo más afín al perfil real.
+ */
+export function buildBroaderQuery(profile) {
+  const { location } = buildSearchQuery(profile);
+  return { keywords: '', location };
+}
+
+/**
  * Una llamada real a Jooble. Devuelve la lista normalizada de ofertas.
  * La clave vive SOLO en JOOBLE_API_KEY.
+ * queryOverride permite pasar una query ya armada (p. ej. la ampliada).
  */
-export async function searchJooble(profile) {
+export async function searchJooble(profile, queryOverride) {
   const apiKey = process.env.JOOBLE_API_KEY;
   if (!apiKey) throw Object.assign(new Error('JOOBLE_API_KEY no configurada'), { status: 503 });
 
   const host = process.env.JOOBLE_API_HOST || 'https://ar.jooble.org';
-  const { keywords, location } = buildSearchQuery(profile);
+  const { keywords, location } = queryOverride || buildSearchQuery(profile);
   const res = await fetch(`${host}/api/${apiKey}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },

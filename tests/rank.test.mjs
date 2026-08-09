@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { keywordRank, sanitizeAiRanking, CATEGORIES } from '../netlify/functions/lib/rank.mjs';
-import { buildSearchQuery, normalizeJoobleJob } from '../netlify/functions/lib/jooble.mjs';
+import { buildSearchQuery, buildBroaderQuery, normalizeJoobleJob } from '../netlify/functions/lib/jooble.mjs';
 
 const profile = {
   desiredWork: 'atención al cliente',
@@ -90,4 +90,30 @@ test('normalizeJoobleJob saca HTML del snippet y rechaza links no-http', () => {
   assert.equal(job.title, 'Repositor');
   assert.ok(!job.snippet.includes('<'));
   assert.equal(job.url, ''); // link inseguro descartado
+});
+
+test('sanitizeAiRanking pasa titleEs como traducción sin tocar el título real', () => {
+  const ai = { matches: [{ jobId: 'a', category: 'compatible', reason: 'ok', rank: 1, titleEs: 'Atención al cliente (ES)' }] };
+  const ranked = sanitizeAiRanking(ai, jobs);
+  const a = ranked.find((j) => j.id === 'a');
+  assert.equal(a.titleEs, 'Atención al cliente (ES)');
+  assert.equal(a.title, 'Atención al cliente'); // el original nunca cambia
+  assert.equal(a.url, 'https://jobs.example/a');
+});
+
+test('titleEs faltante o no-string queda vacío', () => {
+  const ai = { matches: [{ jobId: 'a', category: 'compatible', reason: 'ok', rank: 1, titleEs: 42 }] };
+  const ranked = sanitizeAiRanking(ai, jobs);
+  assert.equal(ranked.find((j) => j.id === 'a').titleEs, '');
+  assert.equal(ranked.find((j) => j.id === 'b').titleEs, ''); // omitida por la IA
+});
+
+test('keywordRank no traduce títulos (titleEs vacío)', () => {
+  for (const j of keywordRank(profile, jobs)) assert.equal(j.titleEs, '');
+});
+
+test('buildBroaderQuery amplía a solo-ubicación manteniendo la zona', () => {
+  const q = buildBroaderQuery({ desiredWork: 'reclutador IT trainee remoto', location: 'CABA' });
+  assert.equal(q.keywords, '');
+  assert.equal(q.location, 'Buenos Aires');
 });

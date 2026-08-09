@@ -6,7 +6,7 @@
 
 import { CONFIG, MOCK_AI, MOCK_JOBS as USE_MOCK_JOBS } from './lib/config.mjs';
 import { readJsonBody, validateJobProfile } from './lib/validate.mjs';
-import { searchJooble } from './lib/jooble.mjs';
+import { searchJooble, buildBroaderQuery } from './lib/jooble.mjs';
 import { MOCK_JOBS } from './lib/mock.mjs';
 import { keywordRank, sanitizeAiRanking, RANK_JSON_SCHEMA, RANK_SYSTEM_PROMPT, buildRankUserPrompt } from './lib/rank.mjs';
 import { callOpenAIJson } from './lib/openai.mjs';
@@ -36,6 +36,7 @@ export default async (request, context) => {
   let jobs;
   let totalCount = 0;
   let mock = false;
+  let broadened = false;
   if (USE_MOCK_JOBS) {
     jobs = MOCK_JOBS;
     totalCount = MOCK_JOBS.length;
@@ -43,6 +44,12 @@ export default async (request, context) => {
   } else {
     try {
       ({ jobs, totalCount } = await searchJooble(profile));
+      // Si el término exacto no encontró nada, UNA búsqueda ampliada por zona
+      // (máximo 2 requests Jooble por búsqueda de usuario, nunca más).
+      if (!jobs.length) {
+        ({ jobs, totalCount } = await searchJooble(profile, buildBroaderQuery(profile)));
+        broadened = jobs.length > 0;
+      }
     } catch (err) {
       console.error('search-jobs (jooble) error:', err.message);
       return json({
@@ -77,5 +84,5 @@ export default async (request, context) => {
     ranked = keywordRank(profile, toRank);
   }
 
-  return json({ jobs: ranked.slice(0, CONFIG.MAX_JOBS_RETURNED), mock, totalCount });
+  return json({ jobs: ranked.slice(0, CONFIG.MAX_JOBS_RETURNED), mock, totalCount, broadened });
 };
