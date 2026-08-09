@@ -8,7 +8,9 @@ export const CONFIG = {
   RANK_MODEL: process.env.OPENAI_RANK_MODEL || 'gpt-4o-mini',
 
   MAX_CV_OUTPUT_TOKENS: 1600,
-  MAX_RANK_OUTPUT_TOKENS: 900,
+  // 12 ofertas × (id largo + categoría + razón + traducción de título) puede
+  // superar 900 tokens; si el JSON se trunca, se pierde el ranking de IA.
+  MAX_RANK_OUTPUT_TOKENS: 1800,
 
   // Cuántas ofertas de Jooble pedimos en UNA llamada (rankeamos localmente/IA,
   // nunca paginamos en loop — la cuota es limitada).
