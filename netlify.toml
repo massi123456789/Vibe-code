@@ -1,0 +1,28 @@
+# Configuración de Netlify para EconoChori
+# El sitio es estático (se publica la raíz del repo).
+# Las funciones server-side viven en netlify/functions y son las únicas
+# que tocan claves secretas (OPENAI_API_KEY, JOOBLE_API_KEY).
+# Los valores secretos se configuran en el panel de Netlify, NUNCA acá.
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# No servir código interno como archivos estáticos (publicamos la raíz del repo).
+[[redirects]]
+  from = "/netlify/*"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/tests/*"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/scripts/*"
+  to = "/404.html"
+  status = 404

@@ -1,2 +1,11 @@
 __pycache__/
 *.pyc
+
+# Secretos: nunca commitear claves
+.env
+.env.*
+!.env.example
+
+# Dependencias y artefactos locales
+node_modules/
+.netlify/
