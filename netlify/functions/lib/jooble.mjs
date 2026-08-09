@@ -1,5 +1,7 @@
 // Integración con Jooble (fuente inicial de ofertas).
-// Documentación: https://jooble.org/api/about — POST https://jooble.org/api/{key}
+// Documentación: https://jooble.org/api/about — POST https://{país}.jooble.org/api/{key}
+// El host lleva el país donde se registró la key (Argentina = ar.jooble.org);
+// se puede cambiar con JOOBLE_API_HOST sin tocar código.
 // La cuota es limitada (~500 requests iniciales): UNA sola llamada por búsqueda,
 // con suficientes resultados para rankear localmente/IA. Nunca paginar en loop.
 
@@ -35,8 +37,9 @@ export async function searchJooble(profile) {
   const apiKey = process.env.JOOBLE_API_KEY;
   if (!apiKey) throw Object.assign(new Error('JOOBLE_API_KEY no configurada'), { status: 503 });
 
+  const host = process.env.JOOBLE_API_HOST || 'https://ar.jooble.org';
   const { keywords, location } = buildSearchQuery(profile);
-  const res = await fetch(`https://jooble.org/api/${apiKey}`, {
+  const res = await fetch(`${host}/api/${apiKey}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
@@ -50,8 +53,11 @@ export async function searchJooble(profile) {
     throw Object.assign(new Error(`Jooble respondió ${res.status}`), { status: 502 });
   }
   const data = await res.json();
-  const jobs = Array.isArray(data?.jobs) ? data.jobs : [];
-  return jobs.map(normalizeJoobleJob).filter((j) => j.title && j.url);
+  const rawJobs = Array.isArray(data?.jobs) ? data.jobs : [];
+  return {
+    jobs: rawJobs.map(normalizeJoobleJob).filter((j) => j.title && j.url),
+    totalCount: Number(data?.totalCount) || rawJobs.length,
+  };
 }
 
 /** Normaliza una oferta cruda de Jooble a nuestro formato interno. */

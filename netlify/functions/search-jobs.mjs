@@ -34,13 +34,15 @@ export default async (request, context) => {
 
   // 1) Conseguir ofertas (mock en desarrollo para cuidar la cuota de Jooble).
   let jobs;
+  let totalCount = 0;
   let mock = false;
   if (USE_MOCK_JOBS) {
     jobs = MOCK_JOBS;
+    totalCount = MOCK_JOBS.length;
     mock = true;
   } else {
     try {
-      jobs = await searchJooble(profile);
+      ({ jobs, totalCount } = await searchJooble(profile));
     } catch (err) {
       console.error('search-jobs (jooble) error:', err.message);
       return json({
@@ -50,7 +52,7 @@ export default async (request, context) => {
   }
 
   if (!jobs.length) {
-    return json({ jobs: [], mock, message: 'No encontramos suficientes oportunidades con esta búsqueda. Probemos con una búsqueda un poco más amplia.' });
+    return json({ jobs: [], mock, totalCount, message: 'No encontramos suficientes oportunidades con esta búsqueda. Probemos con una búsqueda un poco más amplia.' });
   }
 
   // 2) Rankear: primero con IA (pocas ofertas, prompt corto); fallback keywords.
@@ -74,5 +76,5 @@ export default async (request, context) => {
     ranked = keywordRank(profile, toRank);
   }
 
-  return json({ jobs: ranked.slice(0, CONFIG.MAX_JOBS_RETURNED), mock });
+  return json({ jobs: ranked.slice(0, CONFIG.MAX_JOBS_RETURNED), mock, totalCount });
 };
