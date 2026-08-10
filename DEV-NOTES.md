@@ -17,7 +17,9 @@ Las llamadas de producción no se anotan (las hace la gente al usar la herramien
 
 | 2026-08-09 | ~15 | Mejoras post-feedback: verificación de búsqueda ampliada (0 resultados → búsqueda por zona), títulos traducidos al español en las tarjetas (varias iteraciones de prompt hasta lograr cumplimiento del modelo) y E2E visual final. |
 
-**Total usado de la key argentina: ~20 de ~500.**
+| 2026-08-10 | ~6 | Matching v2 en producción: 3 perfiles de control (entrada/informal/profesional), detección y fix del bug del filtro de frescura (map/now), verificación de voseo y E2E final. |
+
+**Total usado de la key argentina: ~26 de ~500.**
 
 Nota: cada búsqueda de usuario ahora puede usar hasta 2 requests de Jooble
 (la segunda solo si el término exacto devuelve 0 resultados).
