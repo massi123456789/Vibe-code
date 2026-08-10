@@ -6,9 +6,10 @@
 
 import { CONFIG, MOCK_AI, MOCK_JOBS as USE_MOCK_JOBS } from './lib/config.mjs';
 import { readJsonBody, validateJobProfile } from './lib/validate.mjs';
-import { searchJooble, buildBroaderQuery } from './lib/jooble.mjs';
+import { searchJooble, buildBroaderQuery, filterFreshJobs } from './lib/jooble.mjs';
 import { MOCK_JOBS } from './lib/mock.mjs';
-import { keywordRank, sanitizeAiRanking, RANK_JSON_SCHEMA, RANK_SYSTEM_PROMPT, buildRankUserPrompt } from './lib/rank.mjs';
+import { keywordRank, sanitizeAiRanking, preselectJobs, RANK_JSON_SCHEMA, RANK_SYSTEM_PROMPT, buildRankUserPrompt } from './lib/rank.mjs';
+import { ensureSpanishTitles } from './lib/translate.mjs';
 import { callOpenAIJson } from './lib/openai.mjs';
 import { allowRequest, clientIp } from './lib/rate-limit.mjs';
 
@@ -44,10 +45,13 @@ export default async (request, context) => {
   } else {
     try {
       ({ jobs, totalCount } = await searchJooble(profile));
-      // Si el término exacto no encontró nada, UNA búsqueda ampliada por zona
-      // (máximo 2 requests Jooble por búsqueda de usuario, nunca más).
+      jobs = filterFreshJobs(jobs);
+      // Si el término exacto no encontró nada fresco, UNA búsqueda ampliada
+      // (categoría accesible derivada del perfil real, o solo por zona).
+      // Máximo 2 requests Jooble por búsqueda de usuario, nunca más.
       if (!jobs.length) {
         ({ jobs, totalCount } = await searchJooble(profile, buildBroaderQuery(profile)));
+        jobs = filterFreshJobs(jobs);
         broadened = jobs.length > 0;
       }
     } catch (err) {
@@ -63,8 +67,11 @@ export default async (request, context) => {
     return json({ jobs: [], mock, totalCount, message: 'No encontramos suficientes oportunidades con esta búsqueda. Probemos con una búsqueda un poco más amplia.' });
   }
 
-  // 2) Rankear: primero con IA (pocas ofertas, prompt corto); fallback keywords.
-  const toRank = jobs.slice(0, CONFIG.MAX_JOBS_TO_RANK);
+  // 2) Preselección determinística: las ofertas más relevantes, frescas y del
+  //    nivel adecuado son las que van a la IA (no simplemente las primeras).
+  const toRank = preselectJobs(profile, jobs, CONFIG.MAX_JOBS_TO_RANK);
+
+  // 3) Rankear: primero con IA (pocas ofertas, prompt corto); fallback keywords.
   let ranked;
   if (!MOCK_AI) {
     try {
@@ -75,7 +82,7 @@ export default async (request, context) => {
         schema: RANK_JSON_SCHEMA,
         maxTokens: CONFIG.MAX_RANK_OUTPUT_TOKENS,
       });
-      ranked = sanitizeAiRanking(aiOutput, toRank);
+      ranked = sanitizeAiRanking(aiOutput, toRank, profile);
     } catch (err) {
       console.error('search-jobs (ranking IA) error:', err.message);
       ranked = keywordRank(profile, toRank);
@@ -83,6 +90,9 @@ export default async (request, context) => {
   } else {
     ranked = keywordRank(profile, toRank);
   }
+
+  // 4) Título en español garantizado (best-effort) también sin IA.
+  ranked = ensureSpanishTitles(ranked);
 
   return json({ jobs: ranked.slice(0, CONFIG.MAX_JOBS_RETURNED), mock, totalCount, broadened });
 };

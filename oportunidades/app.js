@@ -709,6 +709,8 @@ function buildJobProfile() {
     schedule: it.schedule,
     experienceSummary: (cv?.experience || [])
       .map((e) => e.title).filter(Boolean).join('; ').slice(0, 600),
+    // El nivel educativo ayuda a adaptar el nivel de los puestos recomendados.
+    educationLevel: it.educationLevel,
   };
 }
 
@@ -794,6 +796,7 @@ function renderJobsResult() {
           ${j.company ? `<p class="job-org">${esc(j.company)}</p>` : ''}
           <p class="job-loc">📍 ${esc(j.location || 'Argentina')}</p>
           ${j.salary ? `<p class="job-loc">💰 ${esc(j.salary)}</p>` : ''}
+          ${Number.isFinite(j.updatedDays) ? `<p class="job-loc">🗓️ ${j.updatedDays === 0 ? 'Publicada o actualizada hoy' : j.updatedDays === 1 ? 'Actualizada hace 1 día' : `Actualizada hace ${esc(j.updatedDays)} días`}</p>` : ''}
           ${j.reason ? `<p class="job-reason"><b>Por qué puede encajar:</b> ${esc(j.reason)}</p>` : ''}
           <a class="btn btn-blue btn-sm" href="${esc(j.url)}" target="_blank" rel="noopener nofollow" data-joblink>Ver oportunidad</a>
           <p class="job-source">Publicada por terceros${j.source ? ` · ${esc(j.source)}` : ''}. EconoChori no es el empleador.</p>

@@ -35,7 +35,7 @@ export function cleanStr(value, maxLen) {
   return value.replace(CONTROL_CHARS, ' ').replace(/\s+/g, ' ').trim().slice(0, maxLen);
 }
 
-const EDUCATION_LEVELS = new Set([
+export const EDUCATION_LEVELS = new Set([
   'Primario incompleto', 'Primario completo',
   'Secundario incompleto', 'Secundario completo',
   'Terciario', 'Universitario', 'Prefiero no responder', '',
@@ -112,7 +112,10 @@ export function validateJobProfile(raw) {
     location: cleanStr(raw.location, FIELD_LIMITS.location),
     schedule: cleanStr(raw.schedule, FIELD_LIMITS.schedule),
     experienceSummary: cleanStr(raw.experienceSummary, 600),
+    educationLevel: cleanStr(raw.educationLevel, FIELD_LIMITS.educationLevel),
   };
+  // Nivel educativo desconocido no invalida la búsqueda: se ignora.
+  if (!EDUCATION_LEVELS.has(profile.educationLevel)) profile.educationLevel = '';
   const errors = [];
   if (!profile.desiredWork) errors.push('Falta qué tipo de trabajo buscás.');
   if (!profile.location) errors.push('Falta la ubicación.');

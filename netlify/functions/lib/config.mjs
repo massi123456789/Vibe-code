@@ -20,6 +20,13 @@ export const CONFIG = {
   // Máximo de ofertas que devolvemos al navegador.
   MAX_JOBS_RETURNED: 12,
 
+  // Frescura de ofertas (Jooble informa fecha de actualización por oferta):
+  // más viejas que MAX_JOB_AGE_DAYS se descartan; más viejas que
+  // STALE_JOB_AGE_DAYS se despriorizan en el ranking. Jooble no informa si
+  // una oferta sigue vigente, así que nunca afirmamos disponibilidad.
+  MAX_JOB_AGE_DAYS: 45,
+  STALE_JOB_AGE_DAYS: 14,
+
   // Throttling best-effort por instancia (sin infraestructura extra).
   RATE_LIMITS: {
     'generate-cv': { max: 6, windowMs: 10 * 60 * 1000 },
