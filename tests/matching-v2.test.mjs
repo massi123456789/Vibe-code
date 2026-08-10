@@ -255,3 +255,27 @@ test('validateJobProfile acepta educationLevel válido y descarta inválido', ()
 test('las categorías siguen siendo solo las tres humanas', () => {
   assert.deepEqual(CATEGORIES, ['muy-compatible', 'compatible', 'podria-interesarte']);
 });
+
+test('regresión: searchJooble conserva ofertas recientes CON fecha (bug del map)', async () => {
+  const prevKey = process.env.JOOBLE_API_KEY;
+  const prevFetch = globalThis.fetch;
+  process.env.JOOBLE_API_KEY = 'clave-de-test';
+  const ayer = new Date(Date.now() - 86400_000).toISOString();
+  globalThis.fetch = async () => new Response(JSON.stringify({
+    totalCount: 2,
+    jobs: [
+      { id: 1, title: 'Repositor/a', link: 'https://a.b/1', updated: ayer },
+      { id: 2, title: 'Vendedor/a', link: 'https://a.b/2', updated: ayer },
+    ],
+  }), { status: 200 });
+  try {
+    const { jobs } = await searchJooble(entryProfile);
+    assert.equal(jobs.length, 2);
+    assert.equal(jobs[0].updatedDays, 1);
+    const { filterFreshJobs: ff } = await import('../netlify/functions/lib/jooble.mjs');
+    assert.equal(ff(jobs).length, 2); // las frescas con fecha NO se descartan
+  } finally {
+    globalThis.fetch = prevFetch;
+    if (prevKey === undefined) delete process.env.JOOBLE_API_KEY; else process.env.JOOBLE_API_KEY = prevKey;
+  }
+});

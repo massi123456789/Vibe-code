@@ -73,7 +73,7 @@ export async function searchJooble(profile, queryOverride) {
   const data = await res.json();
   const rawJobs = Array.isArray(data?.jobs) ? data.jobs : [];
   return {
-    jobs: rawJobs.map(normalizeJoobleJob).filter((j) => j.title && j.url),
+    jobs: rawJobs.map((j, i) => normalizeJoobleJob(j, i)).filter((j) => j.title && j.url),
     totalCount: Number(data?.totalCount) || rawJobs.length,
   };
 }
