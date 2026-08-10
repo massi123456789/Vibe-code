@@ -209,7 +209,6 @@ input[aria-invalid="true"],textarea[aria-invalid="true"]{border-color:var(--red)
 .job-badge.compatible{background:#e8f1f9;color:var(--blue);border-color:#c6dcee}
 .job-badge.podria-interesarte{background:var(--paper-2);color:var(--ink-soft);border-color:var(--line-2)}
 .job-card h3{font-size:1.08rem;margin-bottom:.15rem}
-.job-card .job-original{font-size:.8rem;color:var(--ink-soft);margin-bottom:.2rem}
 .job-card .job-org{font-size:.92rem;color:var(--ink-soft);font-weight:600}
 .job-card .job-loc{font-size:.9rem;color:var(--ink-soft);margin:.15rem 0 .45rem}
 .job-card .job-reason{font-size:.93rem;margin:.4rem 0 .7rem}

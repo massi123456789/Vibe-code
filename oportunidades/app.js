@@ -748,12 +748,13 @@ screens.jobs = () => {
     });
 };
 
-// Título para mostrar: la traducción al español si la hay y difiere del
-// original. El título real de la oferta nunca se pierde: se muestra debajo.
+// Título para mostrar: la traducción al español cuando existe y es confiable;
+// si no, el título original (mejor el original que una mala traducción).
+// El título real de Jooble se conserva siempre internamente (j.title).
 function jobDisplayTitle(j) {
   const norm = (s) => (s || '').toLowerCase().replace(/\s+/g, ' ').trim();
   const translated = j.titleEs && norm(j.titleEs) !== norm(j.title);
-  return { heading: translated ? j.titleEs : j.title, original: translated ? j.title : '' };
+  return { heading: translated ? j.titleEs : j.title };
 }
 
 function renderJobsResult() {
@@ -792,7 +793,6 @@ function renderJobsResult() {
         <article class="job-card">
           <span class="job-badge ${esc(j.category)}">${esc(CATEGORY_LABELS[j.category] || 'Podría interesarte')}</span>
           <h3>${esc(t.heading)}</h3>
-          ${t.original ? `<p class="job-original">Título original: ${esc(t.original)}</p>` : ''}
           ${j.company ? `<p class="job-org">${esc(j.company)}</p>` : ''}
           <p class="job-loc">📍 ${esc(j.location || 'Argentina')}</p>
           ${j.salary ? `<p class="job-loc">💰 ${esc(j.salary)}</p>` : ''}
