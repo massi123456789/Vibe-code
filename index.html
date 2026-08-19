@@ -945,12 +945,71 @@ const recipes = [
     ],
     steps:["Cociná ½ taza de avena con agua o leche 3–5 min.","Sumá banana en rodajas.","Agregá 1 cda de mantequilla de maní.","Opcional: canela o un chorrito de miel."],
     why:"Desayuno con fibra y energía estable, por muy poco por porción.",
-    concept:"la avena a granel baja el costo por porción."}
+    concept:"la avena a granel baja el costo por porción."},
+
+  /* --- recetas nuevas: Buenos Aires con precios DIA, Miami con precios Walmart --- */
+  {n:9, r:AR, ring:"#FA9302", icon:"pot", title:"Polenta con huevo y tomate", isNew:true,
+    verify:"Precios en pesos · ver en diaonline.com.ar",
+    ing:[
+      {nm:"Polenta rápida DIA 500 g", pr:"$801", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/polenta-coccion-rapida-dia-500-gr-264675/p"},
+      {nm:"Huevo blanco grande x 12", pr:"$4.190", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/huevo-blanco-grande-12-ud-48133/p"},
+      {nm:"Puré de tomate DIA 520 g", pr:"$959", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/pure-de-tomate-dia-520-gr-34593/p"},
+      {nm:"Cebolla comercial (x kg)", pr:"$1.690", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/cebolla-comercial-en-bolsa-malla-x-kg-90063/p"}
+    ],
+    steps:["Picá ½ cebolla y cocinala en una olla con un chorrito de aceite o agua.","Sumá ½ envase de puré de tomate, sal, pimienta y orégano.","Cociná la salsa 8–10 min.","Herví agua con sal y agregá la polenta en forma de lluvia, revolviendo.","Cociná un huevo por persona, a la plancha, hervido o poché.","Serví la polenta con salsa y el huevo arriba."],
+    why:"Polenta + huevo = energía y proteína; tomate y cebolla suman verduras sin complicar el plato.",
+    concept:"la polenta por paquete grande rinde muchas porciones y se cocina en minutos."},
+
+  {n:10, r:AR, ring:"#006EBA", icon:"noodles", title:"Fideos con garbanzos y tomate", isNew:true,
+    verify:"Precios en pesos · ver en diaonline.com.ar",
+    ing:[
+      {nm:"Fideos tirabuzón DIA 500 g", pr:"$1.290", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/fideos-tirabuzon-dia-500-gr-286224/p"},
+      {nm:"Garbanzos remojados DIA 300 g", pr:"$1.076", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/garbanzos-secos-remojados-dia-300-gr-279123/p"},
+      {nm:"Puré de tomate DIA 520 g", pr:"$959", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/pure-de-tomate-dia-520-gr-34593/p"},
+      {nm:"Cebolla comercial (x kg)", pr:"$1.690", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/cebolla-comercial-en-bolsa-malla-x-kg-90063/p"}
+    ],
+    steps:["Herví los fideos hasta que estén al dente.","Picá ½ cebolla y cocinala en una sartén.","Sumá el puré de tomate.","Enjuagá los garbanzos y agregalos a la salsa.","Cociná 5–8 min con sal, pimienta y pimentón.","Mezclá con los fideos y serví."],
+    why:"Los garbanzos aportan fibra y proteína vegetal; los fideos hacen que el plato sea rendidor y llenador.",
+    concept:"si tenés tiempo, los garbanzos secos rinden todavía más por paquete."},
+
+  {n:11, r:AR, ring:"#3C613D", icon:"can", title:"Arroz con atún y arvejas", isNew:true,
+    verify:"Precios en pesos · ver en diaonline.com.ar",
+    ing:[
+      {nm:"Arroz parboil DIA 1 kg", pr:"$1.871", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/arroz-parboil-largo-fino-00000-dia-1-kg-24234/p"},
+      {nm:"Atún al natural DIA 170 g", pr:"$1.490", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/atun-desmenuzado-al-natural-dia-170-gr-59894/p"},
+      {nm:"Arvejas remojadas DIA 300 g", pr:"$729", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/arvejas-secas-remojadas-dia-300-gr-279121/p"},
+      {nm:"Cebolla comercial (x kg)", pr:"$1.690", dom:"diaonline.com.ar", href:"https://diaonline.supermercadosdia.com.ar/cebolla-comercial-en-bolsa-malla-x-kg-90063/p"}
+    ],
+    steps:["Cociná el arroz.","Picá un poco de cebolla y cocinala en una sartén.","Sumá las arvejas escurridas.","Escurrí el atún y desmenuzalo.","Mezclá arroz, arvejas, cebolla y atún.","Condimentá con limón, pimienta o pimentón."],
+    why:"Atún = proteína accesible + grasas omega-3. Arroz y arvejas ayudan a hacer rendir cada porción.",
+    concept:"compará siempre precio por kilo, no solamente el precio de la lata."},
+
+  {n:12, r:US, ring:"#FA9302", icon:"chicken", title:"Pollo con arroz y vegetales", isNew:true,
+    ing:[
+      {nm:"Muslo de pollo Great Value 3 lb", pr:"US$9.87", href:"https://www.walmart.com/ip/Great-Value-All-Natural-Boneless-Skinless-Chicken-Thighs-3-lb-Frozen/51259017"},
+      {nm:"Arroz largo Great Value 5 lb", pr:"US$2.48", href:"https://www.walmart.com/ip/Great-Value-Long-Grain-Enriched-Rice-5-lbs/516860558"},
+      {nm:"Vegetales mixtos congelados 32 oz", pr:"US$2.58", href:"https://www.walmart.com/ip/Great-Value-Mixed-Vegetables-32-oz-Bag-Frozen/730378482"}
+    ],
+    steps:["Cociná el arroz.","Cortá el pollo en cubos.","Cocinalo en una sartén hasta que esté completamente hecho.","Sumá los vegetales congelados.","Cociná 5–7 min más.","Mezclá con el arroz y condimentá con sal, pimienta, ajo o pimentón."],
+    why:"Pollo + arroz + vegetales: proteína, energía y micronutrientes usando solamente tres básicos.",
+    concept:"las verduras congeladas duran más y ayudan a evitar desperdicio."},
+
+  {n:13, r:US, ring:"#006EBA", icon:"bowl", title:"Papa con brócoli, queso y yogur", isNew:true,
+    ing:[
+      {nm:"Papas russet 5 lb", pr:"US$2.47", href:"https://www.walmart.com/ip/Fresh-Whole-Russet-Potatoes-5lb-bag/10447837"},
+      {nm:"Brócoli congelado 12 oz", pr:"US$1.16", href:"https://www.walmart.com/ip/Great-Value-Frozen-Broccoli-Florets-12-oz-Steamable-Bag/735585383"},
+      {nm:"Cheddar rallado Great Value 8 oz", pr:"US$1.97", href:"https://www.walmart.com/ip/Great-Value-Finely-Shredded-Mild-Cheddar-Cheese-8-oz/10452370"},
+      {nm:"Yogur griego natural 32 oz", pr:"US$2.94", href:"https://www.walmart.com/ip/Great-Value-Greek-Plain-Nonfat-Yogurt-32-oz-Tub/26559565"}
+    ],
+    steps:["Lavá la papa y pinchala varias veces con un tenedor.","Cocinala al microondas hasta que esté tierna.","Calentá el brócoli.","Abrí la papa y sumá brócoli y queso.","Calentá unos segundos hasta que el queso se derrita.","Terminá con una cucharada de yogur y pimienta."],
+    why:"Papa + brócoli + lácteos: energía, fibra, potasio y proteína en un plato simple.",
+    concept:"el yogur natural reemplaza a la crema agria y sirve para otras comidas."}
 ];
 
 /* ---------- render recipes grouped by region ---------- */
 function ingItem(it, dom, url){
   const link = it.href || url;
+  dom = it.dom || dom;
   const optClass = it.opt ? ' opt' : '';
   const star = it.opt ? '★ ' : '';
   return `<li>
@@ -983,7 +1042,7 @@ function card(rc){
         <div class="why">${rc.why}</div>
         <div class="concept"><b>Concepto EconoChori:</b> ${rc.concept}</div>
       </div>
-      <div class="verify-strip"><span class="c">✓</span> ${r.flag} ${r.label}</div>
+      <div class="verify-strip"><span class="c">✓</span> ${r.flag} ${rc.verify || r.label}</div>
     </div>
   </article>`;
 }
@@ -1018,7 +1077,8 @@ const press = [
   {outlet:"Cuarto", h:"En los barrios populares se reducen alimentos para llegar a fin de mes.", url:"https://www.cuarto.com.ar/esto-votaste-en-los-barrios-populares-se-reducen-alimentos-para-llegar-a-fin-de-mes/"},
   {outlet:"Jujuy al Momento", h:"Barrios populares: reducen alimentos para llegar a fin de mes.", url:"https://www.jujuyalmomento.com/barrios/barrios-populares-reducen-alimentos-llegar-fin-mes-n204033"},
   {outlet:"Los Primeros TV", h:"La recuperación no llega a los barrios populares: cae el consumo de alimentos y crece la deuda.", url:"https://www.losprimeros.tv/economia/la-recuperacion-no-llega-a-barrios-populares--cae-el-consumo-de-alimentos-y-crece-la-deuda_a6a47b0a7551b5607f037f30b"},
-  {outlet:"Baradero Te Informa", h:"En los barrios, la mayoría tiene ingresos variables y casi todo se gasta en comida.", url:"https://baraderoteinforma.com.ar/en-los-barrios-la-mayoria-tiene-ingresos-variables-y-casi-todo-se-gasta-en-comida/"}
+  {outlet:"Baradero Te Informa", h:"En los barrios, la mayoría tiene ingresos variables y casi todo se gasta en comida.", url:"https://baraderoteinforma.com.ar/en-los-barrios-la-mayoria-tiene-ingresos-variables-y-casi-todo-se-gasta-en-comida/"},
+  {outlet:"Radio Éxito", h:"Ecos del ajuste: en los barrios populares solo comer se lleva el 93% de los presupuestos de los hogares.", url:"https://radioexito.com.ar/nota/1469/radioexito105"}
 ];
 document.getElementById('pressMount').innerHTML = press.map(p=>`
   <a class="clip" href="${p.url}" target="_blank" rel="noopener">
@@ -1052,8 +1112,13 @@ menuBtn.addEventListener('click',()=>{const open=navLinks.classList.toggle('open
 navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{navLinks.classList.remove('open');menuBtn.setAttribute('aria-expanded','false')}));
 
 /* ---------- reveal on scroll ---------- */
-const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const revealEls=document.querySelectorAll('.reveal');
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:0, rootMargin:'0px 0px -40px 0px'});
+  revealEls.forEach(el=>io.observe(el));
+}else{
+  revealEls.forEach(el=>el.classList.add('in'));
+}
 
 /* ---------- count-up (hero) + bars (research) ---------- */
 const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
