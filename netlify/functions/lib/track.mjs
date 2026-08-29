@@ -33,7 +33,9 @@ export function _setStoreForTests(factory) { storeFactory = factory; }
 async function getImpactStore() {
   if (storeFactory) return storeFactory();
   const { getStore } = await import('@netlify/blobs');
-  return getStore('impacto');
+  // Consistencia fuerte: los contadores hacen leer-sumar-escribir, y con la
+  // consistencia eventual por defecto una lectura vieja pisa incrementos.
+  return getStore({ name: 'impacto', consistency: 'strong' });
 }
 
 /**
