@@ -64,6 +64,65 @@ export async function recordEvent(eventName, count = 1, now = new Date()) {
   }
 }
 
+const DAY_KEY_RE = /^(\d{4}-\d{2}-\d{2})\/(.+)$/;
+
+async function listAllKeys(store) {
+  // La API real pagina con list({paginate:true}) (iterable asíncrono);
+  // también soportamos un list() simple que devuelve {blobs:[...]}.
+  const keys = [];
+  const result = await store.list({ paginate: true });
+  if (result && typeof result[Symbol.asyncIterator] === 'function') {
+    for await (const page of result) {
+      for (const b of page.blobs || []) keys.push(b.key);
+    }
+  } else {
+    for (const b of result?.blobs || []) keys.push(b.key);
+  }
+  return keys;
+}
+
+/**
+ * Migración/reparación idempotente: RECALCULA cada acumulado de por vida
+ * como la suma de todos sus contadores diarios (la fuente de verdad, que
+ * existe desde el primer día). No estima nada: solo suma lo almacenado.
+ * Correrla dos veces da el mismo resultado (recalcula, no suma encima).
+ */
+export async function backfillTotals(now = new Date()) {
+  const store = await getImpactStore();
+
+  const keys = await listAllKeys(store);
+  const sums = {};
+  for (const e of ALLOWED_EVENTS) sums[e] = 0;
+  let earliestDay = null;
+  let dayKeysMatched = 0;
+
+  for (const key of keys) {
+    const m = key.match(DAY_KEY_RE);
+    if (!m || !ALLOWED_EVENTS.has(m[2])) continue;
+    const value = Number(await store.get(key)) || 0;
+    sums[m[2]] += value;
+    dayKeysMatched += 1;
+    if (value > 0 && (!earliestDay || m[1] < earliestDay)) earliestDay = m[1];
+  }
+
+  const before = {};
+  const after = {};
+  for (const e of ALLOWED_EVENTS) {
+    before[e] = Number(await store.get(`totales/${e}`)) || 0;
+    await store.set(`totales/${e}`, String(sums[e]));
+    after[e] = sums[e];
+  }
+
+  await store.set('migraciones/backfill-totales', JSON.stringify({
+    ranAt: now.toISOString(),
+    earliestDay,
+    dayKeysMatched,
+    after,
+  }));
+
+  return { ok: true, before, after, earliestDay, dayKeysMatched };
+}
+
 /**
  * Lee los acumulados de por vida y los contadores de hoy para todos los
  * eventos permitidos. Devuelve ceros si Blobs no está disponible.

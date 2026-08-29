@@ -6,7 +6,7 @@
 // No está linkeado desde ninguna página y lleva noindex.
 // Con ?format=json devuelve JSON en vez de HTML.
 
-import { getStats } from './lib/track.mjs';
+import { getStats, backfillTotals } from './lib/track.mjs';
 import { allowRequest, clientIp } from './lib/rate-limit.mjs';
 
 const notFound = () => new Response('Not Found', { status: 404, headers: { 'content-type': 'text/plain' } });
@@ -43,7 +43,7 @@ const EXTRA_LABELS = {
 export default async (request, context) => {
   const expected = process.env.ADMIN_STATS_TOKEN;
   if (!expected) return notFound();
-  if (request.method !== 'GET') return notFound();
+  if (request.method !== 'GET' && request.method !== 'POST') return notFound();
   if (!allowRequest(`admin-stats:${clientIp(request, context)}`, { max: 30, windowMs: 10 * 60 * 1000 })) {
     return notFound();
   }
@@ -51,6 +51,24 @@ export default async (request, context) => {
   const url = new URL(request.url);
   const given = url.searchParams.get('token') || request.headers.get('x-admin-token') || '';
   if (!tokenMatches(given, expected)) return notFound();
+
+  // POST ?action=backfill — recalcula los acumulados desde los contadores
+  // diarios (idempotente; solo suma eventos realmente almacenados).
+  if (request.method === 'POST') {
+    if (url.searchParams.get('action') !== 'backfill') return notFound();
+    try {
+      const result = await backfillTotals();
+      return new Response(JSON.stringify(result, null, 2), {
+        status: 200,
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' },
+      });
+    } catch (err) {
+      return new Response(JSON.stringify({ ok: false, error: 'Blobs no disponible' }), {
+        status: 503,
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+      });
+    }
+  }
 
   // Chequeo de salud del almacenamiento: escribe y lee un valor de prueba
   // solo si se pide explícitamente (?health=1), para no ensuciar contadores.
