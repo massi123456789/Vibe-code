@@ -34,11 +34,12 @@ export function searchJobs(profile) {
 
 /**
  * Evento de impacto anónimo (fire-and-forget, jamás rompe la UX).
- * Solo se manda el nombre del evento, nunca datos personales.
+ * Solo se manda el nombre del evento (y para job_matches_shown, la cantidad
+ * de ofertas mostradas), nunca datos personales.
  */
-export function trackEvent(event) {
+export function trackEvent(event, count) {
   try {
-    const payload = JSON.stringify({ event });
+    const payload = JSON.stringify(count ? { event, count } : { event });
     if (navigator.sendBeacon) {
       navigator.sendBeacon(`${BASE}/track-event`, new Blob([payload], { type: 'application/json' }));
     } else {

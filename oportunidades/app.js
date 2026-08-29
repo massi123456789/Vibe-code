@@ -729,7 +729,13 @@ screens.jobs = () => {
     .then((result) => {
       state.jobsResult = result;
       saveState();
-      trackEvent('job_search_completed');
+      // Solo cuenta como búsqueda completada si se muestran resultados reales.
+      // El cache de sesión evita recontar por refresh o navegación; "Buscar de
+      // nuevo" borra el cache y sí cuenta como una búsqueda nueva.
+      if (result.jobs?.length) {
+        trackEvent('job_search_completed');
+        trackEvent('job_matches_shown', result.jobs.length);
+      }
       renderJobsResult();
     })
     .catch((err) => {

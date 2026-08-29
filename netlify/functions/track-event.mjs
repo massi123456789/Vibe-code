@@ -1,10 +1,11 @@
 // POST /.netlify/functions/track-event
-// Registra un evento de impacto anónimo. Body: {"event": "cv_generated"}.
+// Registra un evento de impacto anónimo. Body: {"event": "cv_generated"}
+// o {"event": "job_matches_shown", "count": 7} (count solo para ese evento).
 // Se ignora cualquier otro campo: acá no entra PII bajo ningún concepto.
 
 import { CONFIG } from './lib/config.mjs';
 import { readJsonBody } from './lib/validate.mjs';
-import { recordEvent, ALLOWED_EVENTS } from './lib/track.mjs';
+import { recordEvent, ALLOWED_EVENTS, COUNT_EVENTS } from './lib/track.mjs';
 import { allowRequest, clientIp } from './lib/rate-limit.mjs';
 
 const json = (body, status = 200) =>
@@ -27,6 +28,8 @@ export default async (request, context) => {
   const event = typeof raw?.event === 'string' ? raw.event.slice(0, 50) : '';
   if (!ALLOWED_EVENTS.has(event)) return json({ error: 'Evento desconocido' }, 400);
 
-  await recordEvent(event);
-  return json({ ok: true });
+  // count solo para eventos que lo admiten; para el resto siempre 1.
+  const count = COUNT_EVENTS.has(event) ? raw?.count : 1;
+  const result = await recordEvent(event, count);
+  return json({ ok: true, storage: result.storage });
 };
