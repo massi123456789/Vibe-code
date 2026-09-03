@@ -135,7 +135,9 @@
       event.preventDefault();
       errorBox.textContent = '';
       openButton.disabled = true;
-      activeToken = tokenInput.value.trim();
+      // Tokens are generated from URL-safe ASCII. Remove smart quotes,
+      // invisible characters and formatting that can arrive via copy/paste.
+      activeToken = tokenInput.value.replace(/[^A-Za-z0-9_-]/g, '');
       try {
         await loadStats(activeToken);
         tokenInput.value = '';
